@@ -16,7 +16,7 @@ export interface BookingAllowedActions {
  */
 export function bookingActions(
   status: BookingStatus,
-  role: 'CUSTOMER' | 'TECHNICIAN' | 'ADMIN'
+  role: 'CUSTOMER' | 'TECHNICIAN' | 'ADMIN' = 'CUSTOMER'
 ): BookingAllowedActions {
   if (role === 'TECHNICIAN') {
     return {
