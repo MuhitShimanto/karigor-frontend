@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { MobileNav } from '@/components/layout/mobile-nav';
+import { useAuthStore } from '@/store/auth.store';
 
 export interface UserSession {
   id: string;
@@ -28,7 +29,21 @@ interface NavbarProps {
   onLogout?: () => void;
 }
 
-export function Navbar({ user, onLogout }: NavbarProps) {
+export function Navbar({
+  user: propUser,
+  onLogout: propOnLogout,
+}: NavbarProps) {
+  const storeUser = useAuthStore((state) => state.user);
+  const storeLogout = useAuthStore((state) => state.logout);
+  const checkSession = useAuthStore((state) => state.checkSession);
+
+  React.useEffect(() => {
+    checkSession();
+  }, [checkSession]);
+
+  const user = propUser !== undefined ? propUser : storeUser;
+  const onLogout = propOnLogout || storeLogout;
+
   const getDashboardLink = () => {
     if (!user) return '/auth/login';
     if (user.role === 'ADMIN') return '/dashboard/admin';
