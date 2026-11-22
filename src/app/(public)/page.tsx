@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Shield, Clock, CheckCircle, Sparkles } from 'lucide-react';
+import { ArrowRight, Shield, Clock, CheckCircle } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { ServiceCard } from '@/features/services/service-card';
 import { TechnicianCard } from '@/features/technicians/technician-card';
@@ -156,11 +156,6 @@ export default async function HomePage() {
       <section className="via-background to-background from-primary/10 relative overflow-hidden bg-gradient-to-b py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="font-clash bg-background text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold tracking-wide shadow-xs">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Your Trusted Home Service Marketplace</span>
-            </div>
-
             <h1 className="font-clash text-foreground text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
               Professional Home Services at{' '}
               <span className="text-primary">Your Doorstep</span>

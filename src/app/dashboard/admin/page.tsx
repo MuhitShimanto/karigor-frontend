@@ -32,10 +32,12 @@ import { clientRequest } from '@/lib/api/client';
 import { Booking, Category, Payment } from '@/types/domain';
 import { SafeUser } from '@/types/auth';
 
+type OverviewUser = SafeUser & {
+  technicianProfile?: { id: string; location: string };
+};
+
 interface AdminUsersResponse {
-  items: (SafeUser & {
-    technicianProfile?: { id: string; location: string };
-  })[];
+  items: OverviewUser[];
   meta: { total: number };
 }
 
@@ -76,14 +78,35 @@ export default function AdminDashboardOverviewPage() {
       clientRequest<AdminPaymentsResponse>('/admin/payments?limit=50'),
   });
 
-  const users = usersRes?.data?.items || [];
-  const totalUsersCount = usersRes?.data?.meta?.total ?? users.length;
+  const rawUsers = usersRes?.data;
+  const users: OverviewUser[] = Array.isArray(rawUsers)
+    ? (rawUsers as OverviewUser[])
+    : Array.isArray((rawUsers as { items?: OverviewUser[] })?.items)
+      ? (rawUsers as { items: OverviewUser[] }).items
+      : [];
+  const totalUsersCount =
+    usersRes?.meta?.total ??
+    (rawUsers as { meta?: { total?: number } })?.meta?.total ??
+    users.length;
 
-  const bookings = bookingsRes?.data?.items || [];
-  const totalBookingsCount = bookingsRes?.data?.meta?.total ?? bookings.length;
+  const rawBookings = bookingsRes?.data;
+  const bookings: Booking[] = Array.isArray(rawBookings)
+    ? rawBookings
+    : Array.isArray((rawBookings as { items?: Booking[] })?.items)
+      ? (rawBookings as { items: Booking[] }).items
+      : [];
+  const totalBookingsCount =
+    bookingsRes?.meta?.total ??
+    (rawBookings as { meta?: { total?: number } })?.meta?.total ??
+    bookings.length;
 
   const categories = categoriesRes?.data || [];
-  const payments = paymentsRes?.data?.items || [];
+  const rawPayments = paymentsRes?.data;
+  const payments: Payment[] = Array.isArray(rawPayments)
+    ? rawPayments
+    : Array.isArray((rawPayments as { items?: Payment[] })?.items)
+      ? (rawPayments as { items: Payment[] }).items
+      : [];
 
   // Metrics computation
   const customersCount = users.filter((u) => u.role === 'CUSTOMER').length;

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Wrench, ShieldCheck, Clock, Award, Heart } from 'lucide-react';
+import { Wrench, ShieldCheck, Clock, Award } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -196,10 +196,6 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="text-muted-foreground mt-12 flex flex-col items-center justify-between gap-4 border-t pt-6 text-xs sm:flex-row">
           <p>© 2026 Karigor Platform. All rights reserved.</p>
-          <p className="flex items-center gap-1">
-            Built with <Heart className="h-3 w-3 fill-red-500 text-red-500" />{' '}
-            for Programming Hero Assignment 5
-          </p>
         </div>
       </div>
     </footer>

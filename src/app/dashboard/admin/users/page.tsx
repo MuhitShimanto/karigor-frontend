@@ -45,7 +45,8 @@ import {
 } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/feedback/empty-state';
 import { ErrorState } from '@/components/feedback/error-state';
-import { clientRequest } from '@/lib/api/client';
+import { clientRequest, ApiResponse } from '@/lib/api/client';
+import { useAuthStore } from '@/store/auth.store';
 import { SafeUser } from '@/types/auth';
 
 interface AdminUserItem extends Omit<SafeUser, 'technicianProfile'> {
@@ -57,18 +58,12 @@ interface AdminUserItem extends Omit<SafeUser, 'technicianProfile'> {
   } | null;
 }
 
-interface AdminUsersResponse {
-  items: AdminUserItem[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+type AdminUsersResult =
+  AdminUserItem[] | { items: AdminUserItem[]; meta?: ApiResponse['meta'] };
 
 export default function AdminUsersManagementPage() {
   const queryClient = useQueryClient();
+  const authStoreUser = useAuthStore((s) => s.user);
 
   const [search, setSearch] = React.useState('');
   const [debouncedSearch, setDebouncedSearch] = React.useState('');
@@ -96,7 +91,7 @@ export default function AdminUsersManagementPage() {
     queryKey: ['auth', 'me'],
     queryFn: () => clientRequest<SafeUser>('/auth/me'),
   });
-  const currentAdmin = meRes?.data;
+  const currentAdmin = meRes?.data || authStoreUser;
 
   // Build query string
   const queryKey = [
@@ -107,7 +102,7 @@ export default function AdminUsersManagementPage() {
     statusFilter,
     page,
   ];
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey,
     queryFn: () => {
       const params = new URLSearchParams();
@@ -116,7 +111,7 @@ export default function AdminUsersManagementPage() {
       if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim());
       if (roleFilter !== 'ALL') params.set('role', roleFilter);
       if (statusFilter !== 'ALL') params.set('status', statusFilter);
-      return clientRequest<AdminUsersResponse>(
+      return clientRequest<AdminUsersResult>(
         `/admin/users?${params.toString()}`
       );
     },
@@ -139,14 +134,31 @@ export default function AdminUsersManagementPage() {
     onMutate: async ({ userId, newStatus }) => {
       await queryClient.cancelQueries({ queryKey });
       const previousData =
-        queryClient.getQueryData<AdminUsersResponse>(queryKey);
+        queryClient.getQueryData<ApiResponse<AdminUsersResult>>(queryKey);
 
       if (previousData) {
-        queryClient.setQueryData<AdminUsersResponse>(queryKey, {
-          ...previousData,
-          items: previousData.items.map((u) =>
+        let updatedData = previousData.data;
+        if (Array.isArray(previousData.data)) {
+          updatedData = previousData.data.map((u) =>
             u.id === userId ? { ...u, status: newStatus } : u
-          ),
+          );
+        } else if (
+          previousData.data &&
+          Array.isArray(
+            (previousData.data as { items?: AdminUserItem[] }).items
+          )
+        ) {
+          updatedData = {
+            ...previousData.data,
+            items: (previousData.data as { items: AdminUserItem[] }).items.map(
+              (u) => (u.id === userId ? { ...u, status: newStatus } : u)
+            ),
+          };
+        }
+
+        queryClient.setQueryData(queryKey, {
+          ...previousData,
+          data: updatedData,
         });
       }
 
@@ -175,13 +187,20 @@ export default function AdminUsersManagementPage() {
     },
   });
 
-  const users = data?.data?.items || [];
-  const meta = data?.data?.meta || {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 1,
-  };
+  const rawData = data?.data;
+  const users: AdminUserItem[] = Array.isArray(rawData)
+    ? rawData
+    : Array.isArray((rawData as { items?: AdminUserItem[] })?.items)
+      ? (rawData as { items: AdminUserItem[] }).items
+      : [];
+
+  const meta = data?.meta ||
+    (rawData as { meta?: ApiResponse['meta'] })?.meta || {
+      page,
+      limit: 10,
+      total: users.length,
+      totalPages: Math.max(1, Math.ceil(users.length / 10)),
+    };
 
   const handleToggleClick = (u: AdminUserItem) => {
     setTargetUser(u);
@@ -291,7 +310,11 @@ export default function AdminUsersManagementPage() {
             <div className="p-6">
               <ErrorState
                 title="Could not load users"
-                message="Failed to fetch users from server."
+                message={
+                  error instanceof Error
+                    ? error.message
+                    : 'Failed to fetch users from server.'
+                }
                 onRetry={() => refetch()}
               />
             </div>

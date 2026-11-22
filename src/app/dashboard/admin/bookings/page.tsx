@@ -24,7 +24,7 @@ import {
 import { StatusBadge } from '@/features/bookings/status-badge';
 import { EmptyState } from '@/components/feedback/empty-state';
 import { ErrorState } from '@/components/feedback/error-state';
-import { clientRequest } from '@/lib/api/client';
+import { clientRequest, ApiResponse } from '@/lib/api/client';
 import { Booking } from '@/types/domain';
 
 interface AdminBookingsResponse {
@@ -48,19 +48,26 @@ export default function AdminGlobalBookingsPage() {
     queryFn: () => {
       const statusParam =
         statusFilter !== 'ALL' ? `&status=${statusFilter}` : '';
-      return clientRequest<AdminBookingsResponse>(
+      return clientRequest<Booking[] | AdminBookingsResponse>(
         `/admin/bookings?page=${page}&limit=10${statusParam}`
       );
     },
   });
 
-  const bookings = data?.data?.items || [];
-  const meta = data?.data?.meta || {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 1,
-  };
+  const rawBookings = data?.data;
+  const bookings: Booking[] = Array.isArray(rawBookings)
+    ? rawBookings
+    : Array.isArray((rawBookings as { items?: Booking[] })?.items)
+      ? (rawBookings as { items: Booking[] }).items
+      : [];
+
+  const meta = data?.meta ||
+    (rawBookings as { meta?: ApiResponse['meta'] })?.meta || {
+      page,
+      limit: 10,
+      total: bookings.length,
+      totalPages: Math.max(1, Math.ceil(bookings.length / 10)),
+    };
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
