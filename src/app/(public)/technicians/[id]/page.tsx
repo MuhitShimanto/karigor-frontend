@@ -163,7 +163,11 @@ export default async function TechnicianDetailPage({
 
         {/* Right Column: Sticky Book Now Panel */}
         <div id="book-section" className="space-y-6 lg:col-span-1">
-          <BookNowPanel tech={tech} services={services} />
+          <BookNowPanel
+            tech={tech}
+            services={services}
+            slots={tech.slots || []}
+          />
 
           {/* Service Guarantee Card */}
           <Card className="bg-muted/20 border">

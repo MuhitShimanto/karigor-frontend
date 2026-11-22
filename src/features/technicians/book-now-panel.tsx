@@ -2,7 +2,17 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Calendar, Clock, MapPin, ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import {
+  Clock,
+  MapPin,
+  ArrowRight,
+  Loader2,
+  LogIn,
+  AlertCircle,
+} from 'lucide-react';
+import { toast } from 'sonner';
+
 import {
   Card,
   CardContent,
@@ -10,19 +20,39 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { TechnicianProfile, Service } from '@/types/domain';
+import { Input } from '@/components/ui/input';
+import { SlotPicker } from '@/features/bookings/slot-picker';
+import { useAuthStore } from '@/store/auth.store';
+import { clientRequest } from '@/lib/api/client';
+import { TechnicianProfile, Service, AvailabilitySlot } from '@/types/domain';
 
 interface BookNowPanelProps {
   tech: TechnicianProfile;
   services: Service[];
+  slots?: AvailabilitySlot[];
 }
 
-export function BookNowPanel({ tech, services }: BookNowPanelProps) {
+export function BookNowPanel({
+  tech,
+  services,
+  slots = [],
+}: BookNowPanelProps) {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+
   const [selectedServiceId, setSelectedServiceId] = React.useState<string>(
     services[0]?.id || ''
   );
+  const [selectedSlot, setSelectedSlot] =
+    React.useState<AvailabilitySlot | null>(
+      slots.find((s) => !s.isBooked) || null
+    );
+  const [address, setAddress] = React.useState<string>('');
+  const [notes, setNotes] = React.useState<string>('');
+  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = React.useState<string>('');
 
   const selectedService =
     services.find((s) => s.id === selectedServiceId) || services[0];
@@ -34,6 +64,68 @@ export function BookNowPanel({ tech, services }: BookNowPanelProps) {
       ? tech.hourlyRate
       : parseFloat(String(tech.hourlyRate)) || 500;
 
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg('');
+
+    if (!user) {
+      router.push(`/auth/login?next=/technicians/${tech.id}`);
+      return;
+    }
+
+    if (user.role !== 'CUSTOMER') {
+      setErrorMsg('Bookings can only be created by customer accounts.');
+      return;
+    }
+
+    if (!selectedService) {
+      setErrorMsg('Please choose a service to book.');
+      return;
+    }
+
+    if (!selectedSlot) {
+      setErrorMsg('Please select an available time slot.');
+      return;
+    }
+
+    if (!address.trim() || address.trim().length < 5) {
+      setErrorMsg(
+        'Please enter a valid service address (at least 5 characters).'
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await clientRequest('/bookings', {
+        method: 'POST',
+        body: JSON.stringify({
+          serviceId: selectedService.id,
+          slotId: selectedSlot.id,
+          address: address.trim(),
+          notes: notes.trim() || undefined,
+        }),
+      });
+
+      toast.success(
+        'Booking requested successfully! The technician has been notified.'
+      );
+      router.push('/dashboard/customer');
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Failed to create booking. Please try again.';
+      setErrorMsg(msg);
+      toast.error(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isGuest = !user;
+  const isWrongRole = Boolean(user && user.role !== 'CUSTOMER');
+
   return (
     <Card className="bg-card sticky top-20 border shadow-md">
       <CardHeader className="bg-muted/20 border-b pb-4">
@@ -44,79 +136,145 @@ export function BookNowPanel({ tech, services }: BookNowPanelProps) {
           </span>
         </CardTitle>
         <p className="text-muted-foreground text-xs">
-          Select a service and reserve your preferred time slot.
+          Select your service and choose an available appointment slot.
         </p>
       </CardHeader>
 
-      <CardContent className="space-y-4 p-5">
-        {/* Service Selector */}
-        <div className="space-y-1.5">
-          <Label className="text-xs font-semibold">Choose Service</Label>
-          {services.length > 0 ? (
-            <select
-              value={selectedServiceId}
-              onChange={(e) => setSelectedServiceId(e.target.value)}
-              className="border-input bg-background focus:ring-ring h-10 w-full rounded-md border px-3 py-1 text-xs shadow-sm focus:ring-1 focus:outline-none"
-            >
-              {services.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.title} (৳{Number(s.price).toLocaleString()})
-                </option>
-              ))}
-            </select>
-          ) : (
-            <div className="text-muted-foreground rounded-md border p-2 text-xs">
-              General Hourly Consultation (৳
-              {Number(tech.hourlyRate || 500).toLocaleString()}/hr)
+      <form onSubmit={handleBookingSubmit}>
+        <CardContent className="space-y-4 p-5">
+          {errorMsg && (
+            <div className="border-destructive/30 bg-destructive/10 text-destructive flex items-start gap-2 rounded-lg border p-3 text-xs">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{errorMsg}</span>
             </div>
           )}
-        </div>
 
-        {/* Service Summary Highlight */}
-        <div className="bg-muted/30 space-y-2 rounded-lg border p-3 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-amber-500" /> Working hours
-            </span>
-            <span className="text-foreground font-medium">
-              9:00 AM - 8:00 PM
-            </span>
+          {isWrongRole && (
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-300">
+              You are signed in as a <strong>{user?.role}</strong>. Please
+              switch to a customer account to request bookings.
+            </div>
+          )}
+
+          {/* Service Selector */}
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold">1. Choose Service</Label>
+            {services.length > 0 ? (
+              <select
+                value={selectedServiceId}
+                onChange={(e) => setSelectedServiceId(e.target.value)}
+                className="border-input bg-background focus:ring-ring h-10 w-full rounded-md border px-3 py-1 text-xs shadow-sm focus:ring-1 focus:outline-none"
+              >
+                {services.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.title} (৳{Number(s.price).toLocaleString()})
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="text-muted-foreground rounded-md border p-2 text-xs">
+                General Consultation (৳
+                {Number(tech.hourlyRate || 500).toLocaleString()}/hr)
+              </div>
+            )}
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-amber-500" /> Service Area
-            </span>
-            <span className="text-foreground max-w-[130px] truncate font-medium">
-              {tech.location || 'Dhaka Metro'}
-            </span>
+
+          {/* Available Slots Picker */}
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold">2. Select Time Slot</Label>
+            <SlotPicker
+              slots={slots}
+              selectedSlotId={selectedSlot?.id}
+              onSelectSlot={(slot) => {
+                setSelectedSlot(slot);
+                setErrorMsg('');
+              }}
+            />
           </div>
-        </div>
 
-        {/* Available Slot Preview Note */}
-        <div className="space-y-1 rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 p-3 text-xs text-amber-800 dark:text-amber-300">
-          <p className="flex items-center gap-1.5 font-semibold">
-            <Calendar className="h-3.5 w-3.5 text-amber-500" /> Next Available
-            Slots
-          </p>
-          <p className="text-muted-foreground text-[11px]">
-            Slots are dynamically updated in real-time. Pick your preferred
-            appointment during checkout.
-          </p>
-        </div>
-      </CardContent>
+          {/* Service Address */}
+          <div className="space-y-1.5">
+            <Label htmlFor="address" className="text-xs font-semibold">
+              3. Service Address *
+            </Label>
+            <Input
+              id="address"
+              placeholder="e.g. House 14, Road 5, Dhanmondi, Dhaka"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="h-9 text-xs"
+              required
+            />
+          </div>
 
-      <CardFooter className="p-5 pt-0">
-        <Link
-          href={`#book-section`}
-          className={buttonVariants({
-            size: 'lg',
-            className:
-              'w-full gap-2 bg-amber-500 font-bold text-white hover:bg-amber-600',
-          })}
-        >
-          Book Now <ArrowRight className="h-4 w-4" />
-        </Link>
-      </CardFooter>
+          {/* Notes / Issue Details */}
+          <div className="space-y-1.5">
+            <Label htmlFor="notes" className="text-xs font-semibold">
+              4. Issue Details / Instructions (optional)
+            </Label>
+            <Input
+              id="notes"
+              placeholder="Describe the issue or gate/door code..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="h-9 text-xs"
+            />
+          </div>
+
+          {/* Quick Details Bar */}
+          <div className="bg-muted/30 space-y-1 rounded-lg border p-2.5 text-xs">
+            <div className="text-muted-foreground flex items-center justify-between">
+              <span className="flex items-center gap-1">
+                <MapPin className="h-3 w-3 text-amber-500" /> Location
+              </span>
+              <span className="text-foreground font-medium">
+                {tech.location || 'Dhaka Metro'}
+              </span>
+            </div>
+            <div className="text-muted-foreground flex items-center justify-between">
+              <span className="flex items-center gap-1">
+                <Clock className="h-3 w-3 text-amber-500" /> Status on Request
+              </span>
+              <span className="font-semibold text-amber-600 dark:text-amber-400">
+                REQUESTED
+              </span>
+            </div>
+          </div>
+        </CardContent>
+
+        <CardFooter className="p-5 pt-0">
+          {isGuest ? (
+            <Link
+              href={`/auth/login?next=/technicians/${tech.id}`}
+              className={buttonVariants({
+                size: 'lg',
+                className:
+                  'w-full gap-2 bg-amber-500 font-bold text-white hover:bg-amber-600',
+              })}
+            >
+              <LogIn className="h-4 w-4" /> Sign In to Book
+            </Link>
+          ) : (
+            <Button
+              type="submit"
+              disabled={isSubmitting || isWrongRole || !selectedSlot}
+              className="w-full gap-2 bg-amber-500 font-bold text-white hover:bg-amber-600"
+              size="lg"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Submitting
+                  Request...
+                </>
+              ) : (
+                <>
+                  Confirm & Book <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </Button>
+          )}
+        </CardFooter>
+      </form>
     </Card>
   );
 }
