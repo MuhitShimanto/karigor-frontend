@@ -16,7 +16,7 @@ export function ReviewList({
       <CardHeader className="border-b pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg font-bold">
-            <MessageSquare className="h-5 w-5 text-amber-500" />
+            <MessageSquare className="text-primary h-5 w-5" />
             Customer Reviews ({reviewCount})
           </CardTitle>
           <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-sm font-bold text-amber-700 dark:text-amber-400">

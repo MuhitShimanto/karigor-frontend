@@ -199,7 +199,7 @@ export default function AdminDashboardOverviewPage() {
                 {activeBookingsCount} active, {completedBookingsCount} completed
               </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+            <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl">
               <Calendar className="h-5 w-5" />
             </div>
           </CardContent>
@@ -277,7 +277,7 @@ export default function AdminDashboardOverviewPage() {
           className="group border-border/70 bg-card hover:border-primary/40 block rounded-xl border p-5 transition-all hover:shadow-xs"
         >
           <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500">
+            <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-lg">
               <Calendar className="h-5 w-5" />
             </div>
             <ArrowRight className="text-muted-foreground group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />

@@ -86,7 +86,7 @@ export default async function PayPage({ params }: PayPageProps) {
         <CardHeader className="bg-muted/20 border-b pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-base font-bold">
-              <Wrench className="h-4 w-4 text-amber-500" />
+              <Wrench className="text-primary h-4 w-4" />
               {booking.service?.title || 'Service Booking'}
             </CardTitle>
             <StatusBadge status={booking.status} />
@@ -109,7 +109,7 @@ export default async function PayPage({ params }: PayPageProps) {
                 Appointment Slot
               </span>
               <span className="text-foreground mt-0.5 flex items-center gap-1.5 font-semibold">
-                <Calendar className="h-3.5 w-3.5 text-amber-500" />
+                <Calendar className="text-primary h-3.5 w-3.5" />
                 {booking.slot?.startTime
                   ? new Date(booking.slot.startTime).toLocaleString('en-US', {
                       weekday: 'short',
@@ -128,7 +128,7 @@ export default async function PayPage({ params }: PayPageProps) {
                 Service Address
               </span>
               <span className="text-foreground mt-0.5 flex items-center gap-1.5 font-medium">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+                <MapPin className="text-primary h-3.5 w-3.5 shrink-0" />
                 <span>{booking.address}</span>
               </span>
             </div>
@@ -148,7 +148,7 @@ export default async function PayPage({ params }: PayPageProps) {
             </div>
             <div className="text-foreground flex items-baseline justify-between border-t pt-2 text-sm font-bold">
               <span>Total Payable</span>
-              <span className="text-xl font-extrabold text-amber-600 dark:text-amber-400">
+              <span className="text-primary text-xl font-extrabold">
                 ৳{amount.toLocaleString()}
               </span>
             </div>

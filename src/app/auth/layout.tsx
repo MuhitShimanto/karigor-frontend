@@ -12,7 +12,7 @@ export default function AuthLayout({
       <header className="p-4 sm:p-6">
         <div className="container mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500 text-white shadow-sm">
+            <div className="bg-primary text-primary-foreground flex h-9 w-9 items-center justify-center rounded-lg shadow-sm">
               <Wrench className="h-5 w-5" />
             </div>
             <span className="text-foreground text-xl font-bold tracking-tight">

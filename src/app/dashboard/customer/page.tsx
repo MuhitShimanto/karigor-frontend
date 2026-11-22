@@ -148,8 +148,7 @@ export default function CustomerDashboardPage() {
             href="/services"
             className={buttonVariants({
               size: 'sm',
-              className:
-                'h-9 gap-1.5 bg-amber-500 text-xs text-white hover:bg-amber-600',
+              className: 'h-9 gap-1.5 text-xs shadow-sm',
             })}
           >
             <Calendar className="h-3.5 w-3.5" /> Book Service
@@ -169,7 +168,7 @@ export default function CustomerDashboardPage() {
                 {totalBookings}
               </p>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600">
+            <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-lg">
               <Calendar className="h-5 w-5" />
             </div>
           </CardContent>

@@ -86,7 +86,7 @@ export function SlotPicker({
             onClick={() => setActiveDate(dateKey)}
             className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
               selectedDate === dateKey
-                ? 'border-amber-500 bg-amber-50 font-semibold text-amber-900 ring-1 ring-amber-500/30 dark:bg-amber-950/40 dark:text-amber-200'
+                ? 'border-primary bg-primary/10 text-primary ring-primary/30 font-semibold ring-1'
                 : 'border-border bg-card text-muted-foreground hover:bg-muted'
             }`}
           >
@@ -112,8 +112,8 @@ export function SlotPicker({
                 isBooked
                   ? 'border-border bg-muted/50 text-muted-foreground/60 cursor-not-allowed line-through'
                   : isSelected
-                    ? 'border-amber-500 bg-amber-500 font-semibold text-white shadow-sm ring-2 ring-amber-500/20'
-                    : 'border-border bg-card text-foreground hover:bg-muted/40 hover:border-amber-500/40'
+                    ? 'border-primary bg-primary text-primary-foreground ring-primary/20 font-semibold shadow-sm ring-2'
+                    : 'border-border bg-card text-foreground hover:bg-muted/40 hover:border-primary/40'
               }`}
             >
               <span className="truncate">
@@ -141,7 +141,7 @@ export function SlotPicker({
       {/* Legend */}
       <div className="text-muted-foreground flex items-center justify-between border-t pt-2 text-[10px]">
         <div className="flex items-center gap-1">
-          <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
+          <span className="bg-primary inline-block h-2 w-2 rounded-full" />
           <span>Selected</span>
         </div>
         <div className="flex items-center gap-1">

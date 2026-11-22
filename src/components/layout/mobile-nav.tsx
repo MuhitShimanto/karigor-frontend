@@ -38,7 +38,7 @@ export function MobileNav({ user }: MobileNavProps) {
         <div className="flex flex-col gap-6 py-4">
           <SheetHeader className="text-left">
             <SheetTitle className="text-primary flex items-center gap-2 text-xl font-bold">
-              <Wrench className="h-5 w-5 text-amber-500" />
+              <Wrench className="text-primary h-5 w-5" />
               <span>Karigor</span>
             </SheetTitle>
           </SheetHeader>

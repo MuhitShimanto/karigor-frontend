@@ -17,12 +17,12 @@ export function ServiceCard({ service }: { service: Service }) {
       : parseFloat(String(service.price)) || 0;
 
   return (
-    <Card className="flex flex-col justify-between overflow-hidden border transition-all hover:border-amber-500/40 hover:shadow-md">
+    <Card className="hover:border-primary/40 flex flex-col justify-between overflow-hidden border transition-all hover:shadow-md">
       <CardHeader className="p-5 pb-3">
         <div className="flex items-start justify-between gap-2">
           <Badge
             variant="outline"
-            className="border-amber-500/30 text-[11px] font-medium text-amber-600 dark:text-amber-400"
+            className="border-primary/30 text-primary text-[11px] font-medium"
           >
             <Tag className="mr-1 h-3 w-3" />
             {service.category?.name || 'General Service'}
@@ -51,7 +51,7 @@ export function ServiceCard({ service }: { service: Service }) {
         {service.technician && (
           <div className="text-muted-foreground mt-4 flex items-center justify-between border-t pt-3 text-xs">
             <div className="flex items-center gap-1.5 truncate">
-              <Wrench className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+              <Wrench className="text-primary h-3.5 w-3.5 shrink-0" />
               <span className="truncate">
                 {service.technician.user?.name || 'Verified Pro'}
               </span>
@@ -79,7 +79,7 @@ export function ServiceCard({ service }: { service: Service }) {
             size: 'sm',
             variant: 'outline',
             className:
-              'w-full transition-colors hover:bg-amber-500 hover:text-white',
+              'hover:bg-primary hover:text-primary-foreground w-full transition-colors',
           })}
         >
           Book This Service

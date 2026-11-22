@@ -126,12 +126,12 @@ export function RegisterForm() {
                 onClick={() => handleRoleChange('CUSTOMER')}
                 className={`flex flex-col items-center justify-center rounded-xl border p-3 text-center transition-all ${
                   selectedRole === 'CUSTOMER'
-                    ? 'text-foreground border-amber-500 bg-amber-50/50 font-semibold ring-2 ring-amber-500/20 dark:bg-amber-950/20'
+                    ? 'text-foreground border-primary bg-primary/10 ring-primary/20 font-semibold ring-2'
                     : 'border-border bg-card text-muted-foreground hover:bg-muted/50'
                 }`}
               >
                 <UserCheck
-                  className={`mb-1.5 h-5 w-5 ${selectedRole === 'CUSTOMER' ? 'text-amber-500' : ''}`}
+                  className={`mb-1.5 h-5 w-5 ${selectedRole === 'CUSTOMER' ? 'text-primary' : ''}`}
                 />
                 <span className="text-xs font-medium">Customer</span>
                 <span className="text-muted-foreground text-[10px]">
@@ -144,12 +144,12 @@ export function RegisterForm() {
                 onClick={() => handleRoleChange('TECHNICIAN')}
                 className={`flex flex-col items-center justify-center rounded-xl border p-3 text-center transition-all ${
                   selectedRole === 'TECHNICIAN'
-                    ? 'text-foreground border-amber-500 bg-amber-50/50 font-semibold ring-2 ring-amber-500/20 dark:bg-amber-950/20'
+                    ? 'text-foreground border-primary bg-primary/10 ring-primary/20 font-semibold ring-2'
                     : 'border-border bg-card text-muted-foreground hover:bg-muted/50'
                 }`}
               >
                 <Wrench
-                  className={`mb-1.5 h-5 w-5 ${selectedRole === 'TECHNICIAN' ? 'text-amber-500' : ''}`}
+                  className={`mb-1.5 h-5 w-5 ${selectedRole === 'TECHNICIAN' ? 'text-primary' : ''}`}
                 />
                 <span className="text-xs font-medium">Technician</span>
                 <span className="text-muted-foreground text-[10px]">
@@ -263,7 +263,7 @@ export function RegisterForm() {
         <CardFooter className="flex flex-col space-y-3 pt-2">
           <Button
             type="submit"
-            className="w-full bg-amber-500 text-white hover:bg-amber-600"
+            className="w-full shadow-md"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

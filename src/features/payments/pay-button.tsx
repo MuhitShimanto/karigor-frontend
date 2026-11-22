@@ -56,7 +56,7 @@ export function PayButton({
       type="button"
       onClick={handlePay}
       disabled={disabled || isPending}
-      className={`gap-2 bg-amber-500 font-bold text-white shadow-md hover:bg-amber-600 ${className}`}
+      className={`gap-2 font-bold shadow-md ${className}`}
     >
       {isPending ? (
         <>

@@ -99,9 +99,9 @@ export default async function TechnicianDetailPage({
                       <Badge
                         key={idx}
                         variant="secondary"
-                        className="border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-800 dark:text-amber-300"
+                        className="border-primary/20 bg-primary/10 text-primary px-2.5 py-1 text-xs font-medium"
                       >
-                        <CheckCircle2 className="mr-1 h-3 w-3 text-amber-500" />
+                        <CheckCircle2 className="text-primary mr-1 h-3 w-3" />
                         {skill}
                       </Badge>
                     ))
@@ -117,7 +117,7 @@ export default async function TechnicianDetailPage({
           <Card className="border">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg font-bold">
-                <Tag className="h-5 w-5 text-amber-500" />
+                <Tag className="text-primary h-5 w-5" />
                 Services Offered ({services.length})
               </CardTitle>
             </CardHeader>
@@ -127,13 +127,13 @@ export default async function TechnicianDetailPage({
                   {services.map((srv) => (
                     <div
                       key={srv.id}
-                      className="bg-muted/20 space-y-2 rounded-xl border p-4 transition-colors hover:border-amber-500/40"
+                      className="bg-muted/20 hover:border-primary/40 space-y-2 rounded-xl border p-4 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <h4 className="text-foreground text-sm leading-snug font-bold">
                           {srv.title}
                         </h4>
-                        <span className="shrink-0 text-sm font-extrabold text-amber-600 dark:text-amber-400">
+                        <span className="text-primary shrink-0 text-sm font-extrabold">
                           ৳{Number(srv.price).toLocaleString()}
                         </span>
                       </div>

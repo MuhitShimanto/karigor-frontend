@@ -75,7 +75,7 @@ export function BookingReviewCard({ booking }: BookingReviewCardProps) {
   if (booking.status === 'COMPLETED') {
     return (
       <>
-        <Card className="border border-amber-500/30 bg-amber-500/5">
+        <Card className="border-primary/30 bg-primary/5 border">
           <CardContent className="flex flex-col items-center justify-between gap-4 p-5 sm:flex-row">
             <div className="space-y-1 text-center sm:text-left">
               <h3 className="text-foreground flex items-center justify-center gap-1.5 text-sm font-bold sm:justify-start">
@@ -90,10 +90,10 @@ export function BookingReviewCard({ booking }: BookingReviewCardProps) {
             </div>
             <Button
               onClick={() => setDialogOpen(true)}
-              className="shrink-0 gap-1.5 bg-amber-500 text-xs font-medium text-white hover:bg-amber-600"
+              className="shrink-0 gap-1.5 text-xs font-medium shadow-sm"
               size="sm"
             >
-              <Star className="h-3.5 w-3.5 fill-white" />
+              <Star className="h-3.5 w-3.5 fill-current" />
               Leave a Review
             </Button>
           </CardContent>

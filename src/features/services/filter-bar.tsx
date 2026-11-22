@@ -191,7 +191,7 @@ export function FilterBar({ categories }: FilterBarProps) {
             onClick={() => setCategory('')}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               category === ''
-                ? 'bg-amber-500 font-semibold text-white'
+                ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
                 : 'bg-muted hover:bg-accent text-muted-foreground'
             }`}
           >
@@ -204,7 +204,7 @@ export function FilterBar({ categories }: FilterBarProps) {
               onClick={() => setCategory(category === cat.id ? '' : cat.id)}
               className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 category === cat.id
-                  ? 'bg-amber-500 font-semibold text-white'
+                  ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
                   : 'bg-muted hover:bg-accent text-muted-foreground'
               }`}
             >

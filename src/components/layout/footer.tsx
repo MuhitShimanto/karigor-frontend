@@ -10,7 +10,7 @@ export function Footer() {
       <div className="bg-background/50 border-b py-6">
         <div className="container mx-auto grid grid-cols-2 gap-4 px-4 sm:grid-cols-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="rounded-full bg-amber-500/10 p-2 text-amber-600 dark:text-amber-400">
+            <div className="bg-primary/10 text-primary rounded-full p-2">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
@@ -63,7 +63,7 @@ export function Footer() {
           {/* Brand info */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-white shadow-sm">
+              <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg shadow-sm">
                 <Wrench className="h-4 w-4" />
               </div>
               <span className="text-lg font-bold tracking-tight">Karigor</span>

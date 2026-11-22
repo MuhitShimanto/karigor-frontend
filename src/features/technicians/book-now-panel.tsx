@@ -131,7 +131,7 @@ export function BookNowPanel({
       <CardHeader className="bg-muted/20 border-b pb-4">
         <CardTitle className="flex items-center justify-between text-lg font-bold">
           <span>Book Technician</span>
-          <span className="text-xl font-extrabold text-amber-600 dark:text-amber-400">
+          <span className="text-primary text-xl font-extrabold">
             ৳{price.toLocaleString()}
           </span>
         </CardTitle>
@@ -225,7 +225,7 @@ export function BookNowPanel({
           <div className="bg-muted/30 space-y-1 rounded-lg border p-2.5 text-xs">
             <div className="text-muted-foreground flex items-center justify-between">
               <span className="flex items-center gap-1">
-                <MapPin className="h-3 w-3 text-amber-500" /> Location
+                <MapPin className="text-primary h-3 w-3" /> Location
               </span>
               <span className="text-foreground font-medium">
                 {tech.location || 'Dhaka Metro'}
@@ -233,11 +233,9 @@ export function BookNowPanel({
             </div>
             <div className="text-muted-foreground flex items-center justify-between">
               <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3 text-amber-500" /> Status on Request
+                <Clock className="text-primary h-3 w-3" /> Status on Request
               </span>
-              <span className="font-semibold text-amber-600 dark:text-amber-400">
-                REQUESTED
-              </span>
+              <span className="text-primary font-semibold">REQUESTED</span>
             </div>
           </div>
         </CardContent>
@@ -248,8 +246,7 @@ export function BookNowPanel({
               href={`/auth/login?next=/technicians/${tech.id}`}
               className={buttonVariants({
                 size: 'lg',
-                className:
-                  'w-full gap-2 bg-amber-500 font-bold text-white hover:bg-amber-600',
+                className: 'w-full gap-2 font-bold shadow-md',
               })}
             >
               <LogIn className="h-4 w-4" /> Sign In to Book
@@ -258,7 +255,7 @@ export function BookNowPanel({
             <Button
               type="submit"
               disabled={isSubmitting || isWrongRole || !selectedSlot}
-              className="w-full gap-2 bg-amber-500 font-bold text-white hover:bg-amber-600"
+              className="w-full gap-2 font-bold shadow-md"
               size="lg"
             >
               {isSubmitting ? (

@@ -19,7 +19,7 @@ export function TechnicianHeader({ tech }: { tech: TechnicianProfile }) {
     <div className="bg-card rounded-2xl border p-6 shadow-sm sm:p-8">
       <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
         {/* Avatar */}
-        <div className="bg-muted relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-amber-500/40 shadow-md sm:h-28 sm:w-28">
+        <div className="bg-muted border-primary/40 relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 shadow-md sm:h-28 sm:w-28">
           <Image
             src={avatarUrl}
             alt={tech.user?.name || 'Technician'}
@@ -44,11 +44,11 @@ export function TechnicianHeader({ tech }: { tech: TechnicianProfile }) {
 
           <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-xs sm:text-sm">
             <div className="flex items-center gap-1">
-              <MapPin className="h-4 w-4 text-amber-500" />
+              <MapPin className="text-primary h-4 w-4" />
               <span>{tech.location || 'Dhaka, Bangladesh'}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Award className="h-4 w-4 text-amber-500" />
+              <Award className="text-primary h-4 w-4" />
               <span>{tech.experienceYears || 1}+ Years Experience</span>
             </div>
             <div className="flex items-center gap-1 font-semibold text-amber-600 dark:text-amber-400">
@@ -76,7 +76,7 @@ export function TechnicianHeader({ tech }: { tech: TechnicianProfile }) {
 
         {/* Guarantee Badge */}
         <div className="text-muted-foreground hidden flex-col items-end gap-1 border-l pl-6 text-right text-xs lg:flex">
-          <div className="flex items-center gap-1.5 font-semibold text-amber-600">
+          <div className="text-primary flex items-center gap-1.5 font-semibold">
             <Shield className="h-4 w-4" />
             <span>Karigor Protection</span>
           </div>

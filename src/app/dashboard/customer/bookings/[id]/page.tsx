@@ -155,7 +155,7 @@ export default async function BookingDetailPage({
                     <div
                       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
                         isCurrent
-                          ? 'bg-amber-500 text-white ring-4 ring-amber-500/20'
+                          ? 'bg-primary text-primary-foreground ring-primary/20 ring-4'
                           : isPassed
                             ? 'bg-emerald-500 text-white'
                             : 'bg-muted text-muted-foreground'
@@ -172,7 +172,7 @@ export default async function BookingDetailPage({
                       <p
                         className={`text-xs font-semibold ${
                           isCurrent
-                            ? 'font-bold text-amber-600 dark:text-amber-400'
+                            ? 'text-primary font-bold'
                             : isPassed
                               ? 'text-foreground'
                               : 'text-muted-foreground'
@@ -298,8 +298,7 @@ export default async function BookingDetailPage({
               href={`/dashboard/customer/bookings/${booking.id}/pay`}
               className={buttonVariants({
                 size: 'sm',
-                className:
-                  'w-full gap-2 bg-amber-500 font-bold text-white hover:bg-amber-600 sm:w-auto',
+                className: 'w-full gap-2 font-bold shadow-md sm:w-auto',
               })}
             >
               <CreditCard className="h-4 w-4" /> Pay Now (Stripe)

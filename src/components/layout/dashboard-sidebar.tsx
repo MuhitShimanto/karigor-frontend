@@ -57,7 +57,7 @@ function NavContent({
       <div className="space-y-6">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5 px-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500 text-white shadow-sm">
+          <div className="bg-primary text-primary-foreground flex h-9 w-9 items-center justify-center rounded-lg shadow-sm">
             <Wrench className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
@@ -104,12 +104,12 @@ function NavContent({
                 onClick={onNavigate}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-amber-500 text-white shadow-sm'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
               >
                 <Icon
-                  className={`h-4 w-4 ${isActive ? 'text-white' : 'text-muted-foreground'}`}
+                  className={`h-4 w-4 ${isActive ? 'text-primary-foreground' : 'text-muted-foreground'}`}
                 />
                 <span>{item.label}</span>
               </Link>
@@ -239,7 +239,7 @@ export function DashboardSidebar({
           </Sheet>
 
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-500 text-white shadow-sm">
+            <div className="bg-primary text-primary-foreground flex h-7 w-7 items-center justify-center rounded-md shadow-sm">
               <Wrench className="h-4 w-4" />
             </div>
             <span className="text-base font-bold">Karigor</span>

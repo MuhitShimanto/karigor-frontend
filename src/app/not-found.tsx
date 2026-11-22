@@ -5,11 +5,11 @@ import { buttonVariants } from '@/components/ui/button';
 export default function NotFound() {
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
-      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 shadow-sm">
+      <div className="bg-primary/10 text-primary mb-6 flex h-16 w-16 items-center justify-center rounded-2xl shadow-sm">
         <FileQuestion className="h-8 w-8" />
       </div>
 
-      <span className="text-sm font-semibold tracking-widest text-amber-600 uppercase dark:text-amber-400">
+      <span className="text-primary text-sm font-semibold tracking-widest uppercase">
         404 Not Found
       </span>
       <h1 className="text-foreground mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">

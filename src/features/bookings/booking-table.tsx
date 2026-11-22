@@ -140,7 +140,7 @@ export function BookingTable({
                           className={buttonVariants({
                             size: 'sm',
                             className:
-                              'h-8 gap-1 bg-amber-500 px-2.5 text-xs font-semibold text-white shadow-sm hover:bg-amber-600',
+                              'h-8 gap-1 px-2.5 text-xs font-semibold shadow-sm',
                           })}
                         >
                           <CreditCard className="h-3.5 w-3.5" /> Pay Now
@@ -176,7 +176,7 @@ export function BookingTable({
                           variant="outline"
                           size="sm"
                           onClick={() => onLeaveReview(booking)}
-                          className="h-8 gap-1 border-amber-500/40 px-2 text-xs text-amber-600 hover:bg-amber-500/10 dark:text-amber-400"
+                          className="border-primary/40 text-primary hover:bg-primary/10 h-8 gap-1 px-2 text-xs"
                         >
                           <Star className="h-3.5 w-3.5" /> Review
                         </Button>

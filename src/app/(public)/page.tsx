@@ -153,19 +153,17 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="via-background to-background relative overflow-hidden bg-gradient-to-b from-amber-500/10 py-16 md:py-24">
+      <section className="via-background to-background from-primary/10 relative overflow-hidden bg-gradient-to-b py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="font-clash bg-background mb-6 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold tracking-wide text-amber-600 shadow-xs dark:text-amber-400">
+            <div className="font-clash bg-background text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold tracking-wide shadow-xs">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Your Trusted Home Service Marketplace</span>
             </div>
 
             <h1 className="font-clash text-foreground text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
               Professional Home Services at{' '}
-              <span className="text-amber-500 dark:text-amber-400">
-                Your Doorstep
-              </span>
+              <span className="text-primary">Your Doorstep</span>
             </h1>
 
             <p className="text-muted-foreground mt-6 text-base leading-relaxed sm:text-lg">
@@ -179,8 +177,7 @@ export default async function HomePage() {
                 href="/services"
                 className={buttonVariants({
                   size: 'lg',
-                  className:
-                    'w-full gap-2 bg-amber-500 font-medium text-white hover:bg-amber-600 sm:w-auto',
+                  className: 'w-full gap-2 shadow-md sm:w-auto',
                 })}
               >
                 Browse Services <ArrowRight className="h-4 w-4" />
@@ -233,7 +230,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <span className="text-xs font-semibold tracking-wider text-amber-600 uppercase dark:text-amber-400">
+              <span className="text-primary text-xs font-semibold tracking-wider uppercase">
                 Popular Requests
               </span>
               <h2 className="text-foreground mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
@@ -242,7 +239,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/services"
-              className="flex items-center gap-1 text-sm font-semibold text-amber-600 hover:underline"
+              className="text-primary flex items-center gap-1 text-sm font-semibold hover:underline"
             >
               View all services <ArrowRight className="h-4 w-4" />
             </Link>
@@ -261,7 +258,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <span className="text-xs font-semibold tracking-wider text-amber-600 uppercase dark:text-amber-400">
+              <span className="text-primary text-xs font-semibold tracking-wider uppercase">
                 Verified Experts
               </span>
               <h2 className="text-foreground mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
@@ -270,7 +267,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/services?sort=rating"
-              className="flex items-center gap-1 text-sm font-semibold text-amber-600 hover:underline"
+              className="text-primary flex items-center gap-1 text-sm font-semibold hover:underline"
             >
               Browse all professionals <ArrowRight className="h-4 w-4" />
             </Link>
@@ -299,7 +296,7 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             <div className="bg-card rounded-xl border p-6 shadow-sm">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600">
+              <div className="bg-primary/10 text-primary mb-4 flex h-10 w-10 items-center justify-center rounded-lg">
                 <Shield className="h-5 w-5" />
               </div>
               <h3 className="mb-2 text-lg font-semibold">Verified Experts</h3>

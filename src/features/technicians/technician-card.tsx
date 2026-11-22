@@ -24,10 +24,10 @@ export function TechnicianCard({ tech }: { tech: TechnicianProfile }) {
     )}`;
 
   return (
-    <Card className="flex flex-col justify-between overflow-hidden border transition-all hover:border-amber-500/40 hover:shadow-lg">
+    <Card className="hover:border-primary/40 flex flex-col justify-between overflow-hidden border transition-all hover:shadow-lg">
       <CardHeader className="p-5 pb-3">
         <div className="flex items-center gap-3">
-          <div className="bg-muted relative h-14 w-14 shrink-0 overflow-hidden rounded-full border-2 border-amber-500/30">
+          <div className="bg-muted border-primary/30 relative h-14 w-14 shrink-0 overflow-hidden rounded-full border-2">
             <Image
               src={avatarUrl}
               alt={tech.user?.name || 'Technician'}
@@ -43,7 +43,7 @@ export function TechnicianCard({ tech }: { tech: TechnicianProfile }) {
               {tech.user?.name || 'Technician'}
             </h3>
             <div className="text-muted-foreground mt-0.5 flex items-center gap-1.5 text-xs">
-              <MapPin className="h-3 w-3 shrink-0 text-amber-500" />
+              <MapPin className="text-primary h-3 w-3 shrink-0" />
               <span className="truncate">
                 {tech.location || 'Dhaka, Bangladesh'}
               </span>
@@ -95,7 +95,7 @@ export function TechnicianCard({ tech }: { tech: TechnicianProfile }) {
         {/* Experience & Price Bar */}
         <div className="flex items-center justify-between border-t pt-3 text-xs">
           <div className="text-muted-foreground flex items-center gap-1">
-            <Award className="h-3.5 w-3.5 text-amber-500" />
+            <Award className="text-primary h-3.5 w-3.5" />
             <span>{tech.experienceYears || 1}+ yrs exp</span>
           </div>
           <div className="text-right">
@@ -116,8 +116,7 @@ export function TechnicianCard({ tech }: { tech: TechnicianProfile }) {
           href={`/technicians/${tech.id}`}
           className={buttonVariants({
             size: 'sm',
-            className:
-              'w-full gap-1.5 bg-amber-500 text-white hover:bg-amber-600',
+            className: 'w-full gap-1.5 shadow-sm',
           })}
         >
           View Profile & Book <ArrowRight className="h-3.5 w-3.5" />

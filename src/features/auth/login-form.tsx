@@ -162,7 +162,7 @@ export function LoginForm() {
           {/* Quick Demo Credentials */}
           <div className="bg-muted/30 space-y-2 rounded-lg border p-3">
             <div className="text-muted-foreground flex items-center gap-1.5 text-xs font-semibold">
-              <KeyRound className="h-3.5 w-3.5 text-amber-500" />
+              <KeyRound className="text-primary h-3.5 w-3.5" />
               <span>Demo Test Accounts:</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -200,7 +200,7 @@ export function LoginForm() {
         <CardFooter className="flex flex-col space-y-3 pt-2">
           <Button
             type="submit"
-            className="w-full bg-amber-500 text-white hover:bg-amber-600"
+            className="w-full shadow-md"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
