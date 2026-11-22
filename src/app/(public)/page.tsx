@@ -156,12 +156,12 @@ export default async function HomePage() {
       <section className="via-background to-background relative overflow-hidden bg-gradient-to-b from-amber-500/10 py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="bg-background mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium text-amber-600 shadow-sm dark:text-amber-400">
+            <div className="font-clash bg-background mb-6 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold tracking-wide text-amber-600 shadow-xs dark:text-amber-400">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Your Trusted Home Service Marketplace</span>
             </div>
 
-            <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
+            <h1 className="font-clash text-foreground text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
               Professional Home Services at{' '}
               <span className="text-amber-500 dark:text-amber-400">
                 Your Doorstep
@@ -180,7 +180,7 @@ export default async function HomePage() {
                 className={buttonVariants({
                   size: 'lg',
                   className:
-                    'w-full gap-2 bg-amber-500 text-white hover:bg-amber-600 sm:w-auto',
+                    'w-full gap-2 bg-amber-500 font-medium text-white hover:bg-amber-600 sm:w-auto',
                 })}
               >
                 Browse Services <ArrowRight className="h-4 w-4" />
@@ -190,7 +190,7 @@ export default async function HomePage() {
                 className={buttonVariants({
                   variant: 'outline',
                   size: 'lg',
-                  className: 'w-full sm:w-auto',
+                  className: 'w-full font-medium sm:w-auto',
                 })}
               >
                 Join as a Technician
@@ -200,18 +200,28 @@ export default async function HomePage() {
             {/* Quick stats row */}
             <div className="mt-12 grid grid-cols-3 gap-4 border-t pt-8 text-center">
               <div>
-                <p className="text-foreground text-2xl font-bold">500+</p>
-                <p className="text-muted-foreground text-xs">
+                <p className="font-clash text-foreground text-2xl font-bold sm:text-3xl">
+                  500+
+                </p>
+                <p className="text-muted-foreground mt-0.5 text-xs">
                   Verified Technicians
                 </p>
               </div>
               <div>
-                <p className="text-foreground text-2xl font-bold">15,000+</p>
-                <p className="text-muted-foreground text-xs">Jobs Completed</p>
+                <p className="font-clash text-foreground text-2xl font-bold sm:text-3xl">
+                  15,000+
+                </p>
+                <p className="text-muted-foreground mt-0.5 text-xs">
+                  Jobs Completed
+                </p>
               </div>
               <div>
-                <p className="text-foreground text-2xl font-bold">4.8 / 5</p>
-                <p className="text-muted-foreground text-xs">Average Rating</p>
+                <p className="font-clash text-foreground text-2xl font-bold sm:text-3xl">
+                  4.8 / 5
+                </p>
+                <p className="text-muted-foreground mt-0.5 text-xs">
+                  Average Rating
+                </p>
               </div>
             </div>
           </div>
