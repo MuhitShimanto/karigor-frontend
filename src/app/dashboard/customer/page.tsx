@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import {
   Calendar,
   Clock,
@@ -12,32 +13,92 @@ import {
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BookingTable } from '@/features/bookings/booking-table';
+import { PaymentTable } from '@/features/payments/payment-table';
 import { EmptyState } from '@/components/feedback/empty-state';
 import { ErrorState } from '@/components/feedback/error-state';
 import { clientRequest } from '@/lib/api/client';
-import { Booking } from '@/types/domain';
+import { Booking, Payment } from '@/types/domain';
 
 export default function CustomerDashboardPage() {
+  const [activeTab, setActiveTab] = React.useState<string>('bookings');
   const [statusFilter, setStatusFilter] = React.useState<string>('ALL');
 
+  // Track previous booking statuses to show FR-CUS-8 status-change toasts
+  const previousStatusMap = React.useRef<Record<string, string>>({});
+
+  // Fetch Bookings with 20s refetch interval
   const {
     data: bookingsRes,
-    isLoading,
-    isError,
-    refetch,
-    isFetching,
+    isLoading: isBookingsLoading,
+    isError: isBookingsError,
+    refetch: refetchBookings,
+    isFetching: isBookingsFetching,
   } = useQuery({
     queryKey: ['bookings', 'customer', statusFilter],
     queryFn: () => {
       const query = statusFilter !== 'ALL' ? `?status=${statusFilter}` : '';
       return clientRequest<Booking[]>(`/bookings${query}`);
     },
-    refetchInterval: 20000, // SRS FR-CUS-8: Refetch interval every 20s
+    refetchInterval: 20000,
   });
 
-  const bookings = bookingsRes?.data || [];
+  // Fetch Payments history
+  const {
+    data: paymentsRes,
+    isLoading: isPaymentsLoading,
+    isError: isPaymentsError,
+    refetch: refetchPayments,
+  } = useQuery({
+    queryKey: ['payments', 'customer'],
+    queryFn: () => clientRequest<Payment[]>('/payments'),
+    enabled: activeTab === 'payments',
+  });
+
+  const bookings = React.useMemo(
+    () => bookingsRes?.data || [],
+    [bookingsRes?.data]
+  );
+  const payments = React.useMemo(
+    () => paymentsRes?.data || [],
+    [paymentsRes?.data]
+  );
+
+  // FR-CUS-8: Trigger toast notifications when a booking status changes
+  React.useEffect(() => {
+    if (bookings.length === 0) return;
+
+    for (const b of bookings) {
+      const prev = previousStatusMap.current[b.id];
+      if (prev && prev !== b.status) {
+        if (b.status === 'ACCEPTED') {
+          toast.success(
+            `Good news! Your booking for "${b.service?.title || 'Service'}" was accepted. You can now proceed to payment.`
+          );
+        } else if (b.status === 'PAID') {
+          toast.info(
+            `Payment verified for "${b.service?.title || 'Service'}". Status is now PAID.`
+          );
+        } else if (b.status === 'IN_PROGRESS') {
+          toast.info(
+            `The technician has started work on "${b.service?.title || 'Service'}".`
+          );
+        } else if (b.status === 'COMPLETED') {
+          toast.success(
+            `Job completed! Please leave a review for your technician.`
+          );
+        } else if (b.status === 'DECLINED') {
+          toast.warning(
+            `Your booking request for "${b.service?.title || 'Service'}" was declined.`
+          );
+        } else if (b.status === 'CANCELLED') {
+          toast.info(`Booking #${b.id.slice(0, 8)} has been cancelled.`);
+        }
+      }
+      previousStatusMap.current[b.id] = b.status;
+    }
+  }, [bookings]);
 
   // Metrics
   const totalBookings = bookings.length;
@@ -67,12 +128,15 @@ export default function CustomerDashboardPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
+            onClick={() => {
+              refetchBookings();
+              if (activeTab === 'payments') refetchPayments();
+            }}
+            disabled={isBookingsFetching}
             className="h-9 gap-1.5 text-xs"
           >
             <RotateCw
-              className={`h-3.5 w-3.5 ${isFetching ? 'animate-spin' : ''}`}
+              className={`h-3.5 w-3.5 ${isBookingsFetching ? 'animate-spin' : ''}`}
             />
             Refresh
           </Button>
@@ -157,65 +221,110 @@ export default function CustomerDashboardPage() {
         </Card>
       </div>
 
-      {/* Bookings Section with Status Tabs */}
-      <div className="space-y-4">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-          <h2 className="text-foreground text-lg font-bold">
-            My Booking Requests
+      {/* Main Tabs: Bookings vs Payment History */}
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
+        <TabsList className="bg-muted/60 p-1">
+          <TabsTrigger value="bookings" className="px-4 text-xs">
+            My Bookings ({totalBookings})
+          </TabsTrigger>
+          <TabsTrigger value="payments" className="px-4 text-xs">
+            Payment History
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Tab 1: Bookings */}
+        <TabsContent value="bookings" className="space-y-4">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <h2 className="text-foreground text-base font-bold">
+              Service Requests
+            </h2>
+
+            <Tabs
+              value={statusFilter}
+              onValueChange={setStatusFilter}
+              className="w-auto"
+            >
+              <TabsList className="bg-muted/60 h-8 p-0.5">
+                <TabsTrigger value="ALL" className="h-7 px-2.5 text-xs">
+                  All
+                </TabsTrigger>
+                <TabsTrigger value="REQUESTED" className="h-7 px-2.5 text-xs">
+                  Requested
+                </TabsTrigger>
+                <TabsTrigger value="ACCEPTED" className="h-7 px-2.5 text-xs">
+                  Accepted
+                </TabsTrigger>
+                <TabsTrigger value="PAID" className="h-7 px-2.5 text-xs">
+                  Paid
+                </TabsTrigger>
+                <TabsTrigger value="COMPLETED" className="h-7 px-2.5 text-xs">
+                  Completed
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {isBookingsLoading ? (
+            <div className="text-muted-foreground animate-pulse rounded-xl border p-8 text-center text-xs">
+              Loading your bookings...
+            </div>
+          ) : isBookingsError ? (
+            <ErrorState
+              title="Could not load bookings"
+              message="Please check your connection and click retry."
+              onRetry={() => refetchBookings()}
+            />
+          ) : bookings.length > 0 ? (
+            <BookingTable
+              bookings={bookings}
+              onRefresh={() => refetchBookings()}
+            />
+          ) : (
+            <EmptyState
+              title="No bookings in this category"
+              description="You do not have any requests under the selected status filter."
+              action={
+                <Link
+                  href="/services"
+                  className={buttonVariants({ size: 'sm', variant: 'outline' })}
+                >
+                  Explore Services
+                </Link>
+              }
+            />
+          )}
+        </TabsContent>
+
+        {/* Tab 2: Payments History */}
+        <TabsContent value="payments" className="space-y-4">
+          <h2 className="text-foreground text-base font-bold">
+            Transactions Log
           </h2>
 
-          <Tabs
-            value={statusFilter}
-            onValueChange={setStatusFilter}
-            className="w-auto"
-          >
-            <TabsList className="bg-muted/60 h-8 p-0.5">
-              <TabsTrigger value="ALL" className="h-7 px-2.5 text-xs">
-                All
-              </TabsTrigger>
-              <TabsTrigger value="REQUESTED" className="h-7 px-2.5 text-xs">
-                Requested
-              </TabsTrigger>
-              <TabsTrigger value="ACCEPTED" className="h-7 px-2.5 text-xs">
-                Accepted
-              </TabsTrigger>
-              <TabsTrigger value="PAID" className="h-7 px-2.5 text-xs">
-                Paid
-              </TabsTrigger>
-              <TabsTrigger value="COMPLETED" className="h-7 px-2.5 text-xs">
-                Completed
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {isLoading ? (
-          <div className="text-muted-foreground animate-pulse rounded-xl border p-8 text-center text-xs">
-            Loading your bookings...
-          </div>
-        ) : isError ? (
-          <ErrorState
-            title="Could not load bookings"
-            message="Please check your connection and click retry."
-            onRetry={() => refetch()}
-          />
-        ) : bookings.length > 0 ? (
-          <BookingTable bookings={bookings} onRefresh={() => refetch()} />
-        ) : (
-          <EmptyState
-            title="No bookings in this status"
-            description="You don't have any bookings matching the current filter."
-            action={
-              <Link
-                href="/services"
-                className={buttonVariants({ size: 'sm', variant: 'outline' })}
-              >
-                Explore Services
-              </Link>
-            }
-          />
-        )}
-      </div>
+          {isPaymentsLoading ? (
+            <div className="text-muted-foreground animate-pulse rounded-xl border p-8 text-center text-xs">
+              Loading transactions...
+            </div>
+          ) : isPaymentsError ? (
+            <ErrorState
+              title="Could not load payment logs"
+              message="Please check your connection and try again."
+              onRetry={() => refetchPayments()}
+            />
+          ) : payments.length > 0 ? (
+            <PaymentTable payments={payments} />
+          ) : (
+            <EmptyState
+              title="No payment records yet"
+              description="Your verified Stripe payments will appear here once you complete checkout for accepted bookings."
+            />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
