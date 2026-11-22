@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { buttonVariants } from '@/components/ui/button';
 import { StatusBadge } from '@/features/bookings/status-badge';
 import { bookingActions } from '@/features/bookings/actions';
+import { BookingReviewCard } from '@/features/reviews/booking-review-card';
 import { serverRequest } from '@/lib/api/server';
 import { Booking } from '@/types/domain';
 import { BookingStatus } from '@/lib/constants';
@@ -190,6 +191,9 @@ export default async function BookingDetailPage({
           )}
         </CardContent>
       </Card>
+
+      {/* Review Section (FR-CUS-10) */}
+      <BookingReviewCard booking={booking} />
 
       {/* Booking Details Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

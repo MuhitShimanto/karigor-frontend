@@ -16,6 +16,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BookingTable } from '@/features/bookings/booking-table';
 import { PaymentTable } from '@/features/payments/payment-table';
+import { ReviewDialog } from '@/features/reviews/review-dialog';
 import { EmptyState } from '@/components/feedback/empty-state';
 import { ErrorState } from '@/components/feedback/error-state';
 import { clientRequest } from '@/lib/api/client';
@@ -24,6 +25,8 @@ import { Booking, Payment } from '@/types/domain';
 export default function CustomerDashboardPage() {
   const [activeTab, setActiveTab] = React.useState<string>('bookings');
   const [statusFilter, setStatusFilter] = React.useState<string>('ALL');
+  const [reviewingBooking, setReviewingBooking] =
+    React.useState<Booking | null>(null);
 
   // Track previous booking statuses to show FR-CUS-8 status-change toasts
   const previousStatusMap = React.useRef<Record<string, string>>({});
@@ -282,6 +285,7 @@ export default function CustomerDashboardPage() {
             <BookingTable
               bookings={bookings}
               onRefresh={() => refetchBookings()}
+              onLeaveReview={(booking) => setReviewingBooking(booking)}
             />
           ) : (
             <EmptyState
@@ -325,6 +329,13 @@ export default function CustomerDashboardPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      <ReviewDialog
+        booking={reviewingBooking}
+        open={Boolean(reviewingBooking)}
+        onOpenChange={(open) => !open && setReviewingBooking(null)}
+        onSuccess={() => refetchBookings()}
+      />
     </div>
   );
 }
