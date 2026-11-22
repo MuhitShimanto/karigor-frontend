@@ -27,15 +27,8 @@ import { ErrorState } from '@/components/feedback/error-state';
 import { clientRequest, ApiResponse } from '@/lib/api/client';
 import { Booking } from '@/types/domain';
 
-interface AdminBookingsResponse {
-  items: Booking[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+type AdminBookingsResult =
+  Booking[] | { items: Booking[]; meta?: ApiResponse['meta'] };
 
 export default function AdminGlobalBookingsPage() {
   const [statusFilter, setStatusFilter] = React.useState<string>('ALL');
@@ -43,13 +36,17 @@ export default function AdminGlobalBookingsPage() {
 
   const queryKey = ['admin', 'bookings', statusFilter, page];
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey,
     queryFn: () => {
-      const statusParam =
-        statusFilter !== 'ALL' ? `&status=${statusFilter}` : '';
-      return clientRequest<Booking[] | AdminBookingsResponse>(
-        `/admin/bookings?page=${page}&limit=10${statusParam}`
+      const params = new URLSearchParams();
+      params.set('page', String(page));
+      params.set('limit', '10');
+      if (statusFilter !== 'ALL') {
+        params.set('status', statusFilter);
+      }
+      return clientRequest<AdminBookingsResult>(
+        `/admin/bookings?${params.toString()}`
       );
     },
   });
@@ -154,7 +151,11 @@ export default function AdminGlobalBookingsPage() {
             <div className="p-6">
               <ErrorState
                 title="Could not load bookings"
-                message="Failed to fetch orders from server."
+                message={
+                  error instanceof Error
+                    ? error.message
+                    : 'Failed to fetch orders from server.'
+                }
                 onRetry={() => refetch()}
               />
             </div>
@@ -204,7 +205,7 @@ export default function AdminGlobalBookingsPage() {
                       </TableCell>
 
                       <TableCell className="text-foreground font-semibold">
-                        ${Number(b.totalAmount || 0).toFixed(2)}
+                        ৳{Number(b.totalAmount || 0).toLocaleString()}
                       </TableCell>
 
                       <TableCell>
