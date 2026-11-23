@@ -93,7 +93,7 @@ export default async function PayPage({ params }: PayPageProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4 p-6">
+        <CardContent className="space-y-4 p-6 pb-3">
           <div className="grid grid-cols-1 gap-4 text-xs sm:grid-cols-2">
             <div>
               <span className="text-muted-foreground block text-[11px]">
@@ -170,11 +170,11 @@ export default async function PayPage({ params }: PayPageProps) {
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col gap-3 p-6 pt-0">
+        <CardFooter className="flex flex-col gap-3 p-6">
           <PayButton
             bookingId={booking.id}
             amount={amount}
-            className="h-11 w-full text-sm"
+            className="h-11 w-full cursor-pointer text-sm"
           />
 
           <div className="text-muted-foreground flex items-center justify-center gap-2 text-xs">

@@ -63,20 +63,19 @@ export function CancelDialog({
           <div className="bg-destructive/10 text-destructive mb-2 flex h-12 w-12 items-center justify-center rounded-full">
             <AlertTriangle className="h-6 w-6" />
           </div>
-          <DialogTitle>Cancel Booking Request</DialogTitle>
+          <DialogTitle>Cancel Booking Request?</DialogTitle>
           <DialogDescription className="text-xs">
             Are you sure you want to cancel this booking for{' '}
             <strong className="text-foreground">
               {booking.service?.title || 'Service'}
             </strong>
-            ? This will immediately release the technician&apos;s reserved time
-            slot.
+            ?
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-2 py-2">
           <Label htmlFor="cancel-reason" className="text-xs">
-            Reason for cancellation (optional)
+            Reason (optional)
           </Label>
           <Input
             id="cancel-reason"

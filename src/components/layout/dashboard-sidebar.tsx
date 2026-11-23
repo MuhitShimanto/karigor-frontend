@@ -44,6 +44,20 @@ interface NavContentProps {
   onLogout: () => void;
 }
 
+function getInitials(name?: string, email?: string): string {
+  if (name?.trim()) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    }
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  if (email?.trim()) {
+    return email.trim().slice(0, 2).toUpperCase();
+  }
+  return '';
+}
+
 function NavContent({
   role,
   user,
@@ -52,6 +66,8 @@ function NavContent({
   onNavigate,
   onLogout,
 }: NavContentProps) {
+  const initials = getInitials(user?.name, user?.email);
+
   return (
     <div className="flex h-full flex-col justify-between p-4">
       <div className="space-y-6">
@@ -73,24 +89,6 @@ function NavContent({
             </span>
           </div>
         </Link>
-
-        {/* Role Badge & Profile */}
-        <div className="bg-muted/30 rounded-xl border p-3">
-          <div className="mb-1 flex items-center justify-between">
-            <p className="text-foreground truncate text-xs font-semibold">
-              {user?.name || 'User'}
-            </p>
-            <Badge
-              variant="secondary"
-              className="text-[10px] font-bold uppercase"
-            >
-              {role}
-            </Badge>
-          </div>
-          <p className="text-muted-foreground truncate text-[11px]">
-            {user?.email}
-          </p>
-        </div>
 
         {/* Navigation Links */}
         <nav className="space-y-1">
@@ -119,9 +117,53 @@ function NavContent({
       </div>
 
       {/* Bottom Controls */}
-      <div className="space-y-3 border-t pt-4">
-        <div className="flex items-center justify-between px-2">
-          <span className="text-muted-foreground text-xs">Theme</span>
+      <div className="space-y-3 pt-4">
+        {/* Role Badge & Profile (Premium Glass Card with soft light glow behind) */}
+        <div className="group relative">
+          {/* Soft light radius behind the glass */}
+          <div className="from-primary/30 via-primary/10 to-primary/20 pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-tr opacity-70 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+
+          {/* Glass Card */}
+          <div className="bg-card/75 dark:bg-card/50 relative rounded-xl border border-white/20 p-3 shadow-md backdrop-blur-xl dark:border-white/10">
+            <div className="flex items-center gap-2.5">
+              <div className="border-primary/20 bg-primary/10 text-primary relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-xs font-bold uppercase shadow-inner">
+                {user?.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name || 'User avatar'}
+                    className="h-full w-full rounded-full object-cover"
+                  />
+                ) : initials ? (
+                  initials
+                ) : (
+                  <User className="h-4 w-4" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-1.5">
+                  <p className="text-foreground truncate text-xs leading-tight font-semibold">
+                    {user?.name || 'User'}
+                  </p>
+                  <Badge
+                    variant="secondary"
+                    className="shrink-0 px-1.5 py-0 text-[9px] font-bold tracking-wider uppercase"
+                  >
+                    {role}
+                  </Badge>
+                </div>
+                <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
+                  {user?.email}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between border-t px-2 pt-2">
+          <span className="text-muted-foreground text-xs font-medium">
+            Appearance
+          </span>
           <ThemeToggle />
         </div>
 
@@ -129,7 +171,7 @@ function NavContent({
           variant="outline"
           size="sm"
           onClick={onLogout}
-          className="text-destructive hover:text-destructive hover:bg-destructive/10 w-full justify-start gap-2"
+          className="text-destructive hover:text-destructive hover:bg-destructive/10 w-full justify-center gap-2 font-medium transition-colors"
         >
           <LogOut className="h-4 w-4" />
           <span>Sign Out</span>
@@ -201,7 +243,7 @@ export function DashboardSidebar({
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="bg-card/60 hidden min-h-screen w-64 flex-col border-r backdrop-blur md:flex">
+      <aside className="bg-card/60 sticky top-0 hidden h-screen w-64 flex-col border-r backdrop-blur md:flex">
         <NavContent
           role={role}
           user={user}

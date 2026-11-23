@@ -2,7 +2,16 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Menu, Wrench, Shield, Calendar, LogIn, UserPlus } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import {
+  Menu,
+  Wrench,
+  Shield,
+  Calendar,
+  LogIn,
+  UserPlus,
+  LayoutDashboard,
+} from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Sheet,
@@ -12,6 +21,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { cn } from '@/lib/utils';
 
 interface MobileNavProps {
   user?: {
@@ -19,6 +29,46 @@ interface MobileNavProps {
     email: string;
     role: 'CUSTOMER' | 'TECHNICIAN' | 'ADMIN';
   } | null;
+}
+
+function MobileNavLinks({ onSelect }: { onSelect: () => void }) {
+  const pathname = usePathname();
+
+  const isHome = pathname === '/';
+  const isServices =
+    pathname === '/services' || pathname.startsWith('/services/');
+  const isTopTechnicians =
+    pathname === '/technicians' || pathname.startsWith('/technicians/');
+
+  const links = [
+    { href: '/', label: 'Home', active: isHome },
+    { href: '/services', label: 'All Services', active: isServices },
+    {
+      href: '/technicians',
+      label: 'Top Technicians',
+      active: isTopTechnicians,
+    },
+  ];
+
+  return (
+    <>
+      {links.map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          onClick={onSelect}
+          className={cn(
+            'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+            link.active
+              ? 'bg-primary/10 text-primary dark:bg-primary/20 font-bold'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          )}
+        >
+          {link.label}
+        </Link>
+      ))}
+    </>
+  );
 }
 
 export function MobileNav({ user }: MobileNavProps) {
@@ -43,28 +93,10 @@ export function MobileNav({ user }: MobileNavProps) {
             </SheetTitle>
           </SheetHeader>
 
-          <nav className="flex flex-col gap-3 font-medium">
-            <Link
-              href="/"
-              onClick={() => setOpen(false)}
-              className="hover:bg-accent rounded-md px-3 py-2 text-sm transition-colors"
-            >
-              Home
-            </Link>
-            <Link
-              href="/services"
-              onClick={() => setOpen(false)}
-              className="hover:bg-accent rounded-md px-3 py-2 text-sm transition-colors"
-            >
-              All Services
-            </Link>
-            <Link
-              href="/services?sort=rating"
-              onClick={() => setOpen(false)}
-              className="hover:bg-accent rounded-md px-3 py-2 text-sm transition-colors"
-            >
-              Top Technicians
-            </Link>
+          <nav className="flex flex-col gap-1.5 font-medium">
+            <React.Suspense fallback={null}>
+              <MobileNavLinks onSelect={() => setOpen(false)} />
+            </React.Suspense>
 
             {user && (
               <>
@@ -73,13 +105,22 @@ export function MobileNav({ user }: MobileNavProps) {
                   {user.role} Dashboard
                 </span>
                 {user.role === 'CUSTOMER' && (
-                  <Link
-                    href="/dashboard/customer"
-                    onClick={() => setOpen(false)}
-                    className="hover:bg-accent flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
-                  >
-                    <Calendar className="h-4 w-4" /> My Bookings
-                  </Link>
+                  <>
+                    <Link
+                      href="/dashboard/customer"
+                      onClick={() => setOpen(false)}
+                      className="hover:bg-accent flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
+                    >
+                      <LayoutDashboard className="h-4 w-4" /> Dashboard
+                    </Link>
+                    <Link
+                      href="/dashboard/customer"
+                      onClick={() => setOpen(false)}
+                      className="hover:bg-accent flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
+                    >
+                      <Calendar className="h-4 w-4" /> My Bookings
+                    </Link>
+                  </>
                 )}
                 {user.role === 'TECHNICIAN' && (
                   <>

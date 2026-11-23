@@ -37,7 +37,7 @@ import {
 import { StatusBadge } from '@/features/bookings/status-badge';
 import { EmptyState } from '@/components/feedback/empty-state';
 import { ErrorState } from '@/components/feedback/error-state';
-import { clientRequest } from '@/lib/api/client';
+import { clientRequest, ApiResponse } from '@/lib/api/client';
 import { Booking, TechnicianProfile } from '@/types/domain';
 import { SafeUser } from '@/types/auth';
 
@@ -45,15 +45,8 @@ interface AuthMeResponse extends SafeUser {
   technicianProfile?: TechnicianProfile;
 }
 
-interface TechnicianBookingsResponse {
-  items: Booking[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+type TechnicianBookingsData =
+  Booking[] | { items: Booking[]; meta?: ApiResponse['meta'] };
 
 export default function TechnicianOverviewPage() {
   const queryClient = useQueryClient();
@@ -73,9 +66,7 @@ export default function TechnicianOverviewPage() {
   } = useQuery({
     queryKey: ['technician', 'bookings', 'recent'],
     queryFn: () =>
-      clientRequest<TechnicianBookingsResponse>(
-        '/technician/bookings?limit=15'
-      ),
+      clientRequest<TechnicianBookingsData>('/technician/bookings?limit=15'),
     refetchInterval: 20000,
   });
 
@@ -102,6 +93,7 @@ export default function TechnicianOverviewPage() {
       };
       toast.success(actionLabels[variables.action]);
       queryClient.invalidateQueries({ queryKey: ['technician', 'bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
     },
     onError: (err: unknown) => {
       const msg = err instanceof Error ? err.message : 'Action failed.';
@@ -111,7 +103,12 @@ export default function TechnicianOverviewPage() {
 
   const user = userRes?.data;
   const profile = user?.technicianProfile;
-  const bookings = bookingsRes?.data?.items || [];
+  const rawBookings = bookingsRes?.data;
+  const bookings: Booking[] = Array.isArray(rawBookings)
+    ? rawBookings
+    : Array.isArray((rawBookings as { items?: Booking[] })?.items)
+      ? (rawBookings as { items: Booking[] }).items
+      : [];
 
   // Metrics computation
   const totalEarnings = bookings
@@ -178,70 +175,79 @@ export default function TechnicianOverviewPage() {
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {/* Total Earnings */}
-        <Card className="border">
-          <CardContent className="flex items-center justify-between p-4">
+        <Card className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative overflow-hidden rounded-xl border p-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+          <CardContent className="flex items-start justify-between gap-3 p-0">
             <div>
-              <p className="text-muted-foreground text-xs font-medium">
+              <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
                 Total Earnings
               </p>
-              <p className="text-foreground mt-1 text-2xl font-bold">
+              <p className="font-heading text-foreground mt-1 text-2xl font-extrabold tracking-tight">
                 ${totalEarnings.toFixed(2)}
               </p>
+              <p className="text-muted-foreground mt-1 text-[11px]">
+                From completed jobs
+              </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="border-border/80 bg-muted/60 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-emerald-600 shadow-xs transition-transform duration-300 group-hover:scale-105 dark:text-emerald-400">
               <DollarSign className="h-5 w-5" />
             </div>
           </CardContent>
         </Card>
 
         {/* Pending Requests */}
-        <Card className="border">
-          <CardContent className="flex items-center justify-between p-4">
+        <Card className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative overflow-hidden rounded-xl border p-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+          <CardContent className="flex items-start justify-between gap-3 p-0">
             <div>
-              <p className="text-muted-foreground text-xs font-medium">
+              <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
                 Pending Requests
               </p>
-              <p className="mt-1 text-2xl font-bold text-amber-600 dark:text-amber-400">
+              <p className="font-heading mt-1 text-2xl font-extrabold tracking-tight text-amber-600 dark:text-amber-400">
                 {pendingRequests}
               </p>
+              <p className="text-muted-foreground mt-1 text-[11px]">
+                Requires your action
+              </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+            <div className="border-border/80 bg-muted/60 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-amber-600 shadow-xs transition-transform duration-300 group-hover:scale-105 dark:text-amber-400">
               <AlertCircle className="h-5 w-5" />
             </div>
           </CardContent>
         </Card>
 
         {/* Active Jobs */}
-        <Card className="border">
-          <CardContent className="flex items-center justify-between p-4">
+        <Card className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative overflow-hidden rounded-xl border p-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+          <CardContent className="flex items-start justify-between gap-3 p-0">
             <div>
-              <p className="text-muted-foreground text-xs font-medium">
+              <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
                 Active Jobs
               </p>
               <div className="mt-1 flex items-baseline gap-1.5">
-                <span className="text-foreground text-2xl font-bold">
+                <span className="font-heading text-foreground text-2xl font-extrabold tracking-tight">
                   {activeJobs}
                 </span>
                 <span className="text-muted-foreground text-xs">
                   ({completedJobs} done)
                 </span>
               </div>
+              <p className="text-muted-foreground mt-1 text-[11px]">
+                In progress or scheduled
+              </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="border-border/80 bg-muted/60 text-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border shadow-xs transition-transform duration-300 group-hover:scale-105">
               <Clock className="h-5 w-5" />
             </div>
           </CardContent>
         </Card>
 
         {/* Rating & Reviews */}
-        <Card className="border">
-          <CardContent className="flex items-center justify-between p-4">
+        <Card className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative overflow-hidden rounded-xl border p-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+          <CardContent className="flex items-start justify-between gap-3 p-0">
             <div>
-              <p className="text-muted-foreground text-xs font-medium">
+              <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
                 Rating
               </p>
               <div className="mt-1 flex items-baseline gap-1.5">
-                <span className="text-foreground text-2xl font-bold">
+                <span className="font-heading text-foreground text-2xl font-extrabold tracking-tight">
                   {profile?.avgRating
                     ? Number(profile.avgRating).toFixed(1)
                     : 'New'}
@@ -250,8 +256,11 @@ export default function TechnicianOverviewPage() {
                   ({profile?.reviewCount ?? 0} reviews)
                 </span>
               </div>
+              <p className="text-muted-foreground mt-1 text-[11px]">
+                Verified customer ratings
+              </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+            <div className="border-border/80 bg-muted/60 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-amber-500 shadow-xs transition-transform duration-300 group-hover:scale-105">
               <Star className="h-5 w-5 fill-amber-500" />
             </div>
           </CardContent>

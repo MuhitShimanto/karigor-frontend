@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Wrench, MapPin, Tag } from 'lucide-react';
+import { Wrench, MapPin, Tag, ArrowRight } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -17,58 +17,58 @@ export function ServiceCard({ service }: { service: Service }) {
       : parseFloat(String(service.price)) || 0;
 
   return (
-    <Card className="hover:border-primary/40 flex flex-col justify-between overflow-hidden border transition-all hover:shadow-md">
+    <Card className="group border-border/80 bg-card hover:border-foreground/30 hover:shadow-primary/5 dark:border-border/60 dark:hover:border-foreground/40 relative flex flex-col justify-between overflow-hidden rounded-xl border p-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl">
       <CardHeader className="p-5 pb-3">
         <div className="flex items-start justify-between gap-2">
           <Badge
             variant="outline"
-            className="border-primary/30 text-primary text-[11px] font-medium"
+            className="border-border/80 bg-muted/40 text-foreground group-hover:border-foreground/30 text-[11px] font-medium tracking-tight transition-colors"
           >
-            <Tag className="mr-1 h-3 w-3" />
+            <Tag className="text-muted-foreground mr-1 h-3 w-3" />
             {service.category?.name || 'General Service'}
           </Badge>
-          <div className="text-right">
-            <span className="text-muted-foreground block text-xs">
+          <div className="border-border/60 bg-muted/20 rounded-lg border px-2.5 py-1 text-right">
+            <span className="text-muted-foreground block text-[10px] font-medium tracking-wider uppercase">
               Starting at
             </span>
-            <span className="text-foreground text-lg font-bold">
+            <span className="font-heading text-foreground text-base font-bold">
               ৳{price.toLocaleString()}
             </span>
           </div>
         </div>
 
-        <h3 className="text-foreground mt-2 line-clamp-1 text-base leading-tight font-semibold">
+        <h3 className="text-foreground group-hover:text-primary mt-3 line-clamp-1 text-base font-bold tracking-tight transition-colors">
           {service.title}
         </h3>
       </CardHeader>
 
-      <CardContent className="p-5 pt-0">
-        <p className="text-muted-foreground line-clamp-2 min-h-[32px] text-xs">
+      <CardContent className="p-5 pt-0 pb-4">
+        <p className="text-muted-foreground/90 line-clamp-2 min-h-[34px] text-xs leading-relaxed">
           {service.description ||
-            'Professional home service provided by verified technicians.'}
+            'Professional home service delivered with verified safety and quality standards.'}
         </p>
 
         {service.technician && (
-          <div className="text-muted-foreground mt-4 flex items-center justify-between border-t pt-3 text-xs">
-            <div className="flex items-center gap-1.5 truncate">
-              <Wrench className="text-primary h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">
+          <div className="border-border/60 mt-4 flex items-center justify-between border-t pt-3 text-xs">
+            <div className="flex items-center gap-2 truncate">
+              <div className="border-border/60 bg-muted text-muted-foreground flex h-6 w-6 shrink-0 items-center justify-center rounded-full border">
+                <Wrench className="h-3 w-3" />
+              </div>
+              <span className="text-foreground truncate font-medium">
                 {service.technician.user?.name || 'Verified Pro'}
               </span>
             </div>
             {service.technician.location && (
-              <div className="text-muted-foreground flex shrink-0 items-center gap-1">
+              <div className="text-muted-foreground flex shrink-0 items-center gap-1 text-[11px]">
                 <MapPin className="h-3 w-3" />
-                <span className="text-[11px]">
-                  {service.technician.location}
-                </span>
+                <span>{service.technician.location}</span>
               </div>
             )}
           </div>
         )}
       </CardContent>
 
-      <CardFooter className="p-5 pt-0">
+      <CardFooter className="border-border/60 bg-muted/15 border-t px-5 py-4">
         <Link
           href={
             service.technicianId
@@ -76,13 +76,14 @@ export function ServiceCard({ service }: { service: Service }) {
               : '/services'
           }
           className={buttonVariants({
-            size: 'sm',
-            variant: 'outline',
+            size: 'default',
+            variant: 'default',
             className:
-              'hover:bg-primary hover:text-primary-foreground w-full transition-colors',
+              'group/btn hover:bg-primary/90 w-full justify-between font-semibold shadow-xs transition-all hover:shadow-md',
           })}
         >
-          Book This Service
+          <span>Book This Service</span>
+          <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
         </Link>
       </CardFooter>
     </Card>

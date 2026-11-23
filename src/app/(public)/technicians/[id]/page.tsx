@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, ShieldCheck, Tag } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, Tag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TechnicianHeader } from '@/features/technicians/technician-header';
@@ -58,16 +57,6 @@ export default async function TechnicianDetailPage({
 
   return (
     <div className="container mx-auto space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-      {/* Back Link */}
-      <div>
-        <Link
-          href="/services"
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs font-semibold transition-colors"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to all technicians
-        </Link>
-      </div>
-
       {/* Main Profile Header */}
       <TechnicianHeader tech={tech} />
 

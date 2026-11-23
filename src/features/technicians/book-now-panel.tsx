@@ -127,11 +127,11 @@ export function BookNowPanel({
   const isWrongRole = Boolean(user && user.role !== 'CUSTOMER');
 
   return (
-    <Card className="bg-card sticky top-20 border shadow-md">
-      <CardHeader className="bg-muted/20 border-b pb-4">
-        <CardTitle className="flex items-center justify-between text-lg font-bold">
+    <Card className="border-border/80 bg-card dark:border-border/60 sticky top-20 overflow-hidden rounded-xl border shadow-lg">
+      <CardHeader className="border-border/60 bg-muted/20 border-b p-5 pb-4">
+        <CardTitle className="text-foreground flex items-center justify-between text-lg font-bold tracking-tight">
           <span>Book Technician</span>
-          <span className="text-primary text-xl font-extrabold">
+          <span className="font-heading text-foreground text-xl font-extrabold">
             ৳{price.toLocaleString()}
           </span>
         </CardTitle>
@@ -240,7 +240,7 @@ export function BookNowPanel({
           </div>
         </CardContent>
 
-        <CardFooter className="p-5 pt-0">
+        <CardFooter className="border-border/60 bg-muted/15 border-t px-5 py-4">
           {isGuest ? (
             <Link
               href={`/auth/login?next=/technicians/${tech.id}`}

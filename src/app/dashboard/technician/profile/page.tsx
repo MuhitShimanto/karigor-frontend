@@ -683,7 +683,7 @@ export default function TechnicianProfileAndServicesPage() {
                       {svc.description || 'Standard service offering.'}
                     </p>
                   </CardContent>
-                  <CardFooter className="border-border/40 flex justify-end border-t p-3 pt-0">
+                  <CardFooter className="border-border/40 flex justify-end border-t p-3">
                     <Button
                       variant="ghost"
                       size="sm"

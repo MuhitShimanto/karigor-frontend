@@ -21,34 +21,36 @@ export function BookingReviewCard({ booking }: BookingReviewCardProps) {
   if (booking.review) {
     const review = booking.review;
     return (
-      <Card className="border">
+      <Card className="border-border/80 bg-card dark:border-border/60 overflow-hidden rounded-xl border shadow-xs">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-base font-bold">
-              <MessageSquare className="h-4 w-4 text-amber-500" />
+            <CardTitle className="text-foreground flex items-center gap-2 text-base font-bold">
+              <MessageSquare className="text-primary h-4 w-4" />
               Your Review
             </CardTitle>
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={cn(
-                    'h-4 w-4',
-                    star <= review.rating
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'text-muted-foreground/30 fill-transparent'
-                  )}
-                />
-              ))}
-              <span className="text-foreground ml-1 text-xs font-semibold">
+            <div className="border-border/70 bg-muted/40 flex items-center gap-1.5 rounded-md border px-2 py-0.5">
+              <div className="flex items-center gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    className={cn(
+                      'h-3.5 w-3.5',
+                      star <= review.rating
+                        ? 'fill-amber-400 text-amber-400'
+                        : 'text-muted-foreground/30 fill-transparent'
+                    )}
+                  />
+                ))}
+              </div>
+              <span className="text-foreground text-xs font-bold">
                 {review.rating}/5
               </span>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-2.5">
           {review.comment ? (
-            <p className="text-foreground/90 bg-muted/30 border-border/40 rounded-lg border p-3 text-sm italic">
+            <p className="border-border/60 bg-muted/20 text-foreground/90 rounded-lg border p-3.5 text-sm leading-relaxed italic">
               &ldquo;{review.comment}&rdquo;
             </p>
           ) : (
@@ -57,7 +59,7 @@ export function BookingReviewCard({ booking }: BookingReviewCardProps) {
             </p>
           )}
           {review.createdAt && (
-            <p className="text-muted-foreground text-[11px]">
+            <p className="text-muted-foreground text-[11px] font-medium">
               Submitted on{' '}
               {new Date(review.createdAt).toLocaleDateString('en-US', {
                 month: 'short',
@@ -75,22 +77,28 @@ export function BookingReviewCard({ booking }: BookingReviewCardProps) {
   if (booking.status === 'COMPLETED') {
     return (
       <>
-        <Card className="border-primary/30 bg-primary/5 border">
+        <Card className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 overflow-hidden rounded-xl border p-0 transition-all duration-300 hover:shadow-lg">
           <CardContent className="flex flex-col items-center justify-between gap-4 p-5 sm:flex-row">
-            <div className="space-y-1 text-center sm:text-left">
-              <h3 className="text-foreground flex items-center justify-center gap-1.5 text-sm font-bold sm:justify-start">
-                <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-                How was your service?
-              </h3>
-              <p className="text-muted-foreground text-xs">
-                Share your experience to help{' '}
-                {booking.technician?.user?.name || 'the technician'} build
-                credibility on Karigor.
-              </p>
+            <div className="flex items-start gap-3 text-center sm:text-left">
+              <div className="border-border/80 bg-muted/60 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-amber-500 shadow-xs transition-transform duration-300 group-hover:scale-105">
+                <Star className="h-4 w-4 fill-amber-500" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-foreground text-sm font-bold tracking-tight">
+                  How was your service experience?
+                </h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Share your feedback to help{' '}
+                  <strong className="text-foreground">
+                    {booking.technician?.user?.name || 'the technician'}
+                  </strong>{' '}
+                  build trust on Karigor.
+                </p>
+              </div>
             </div>
             <Button
               onClick={() => setDialogOpen(true)}
-              className="shrink-0 gap-1.5 text-xs font-medium shadow-sm"
+              className="shrink-0 gap-1.5 text-xs font-semibold shadow-xs"
               size="sm"
             >
               <Star className="h-3.5 w-3.5 fill-current" />

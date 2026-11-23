@@ -12,8 +12,8 @@ import {
 
 export default function PaymentCancelPage() {
   return (
-    <div className="container max-w-xl py-12 md:py-20">
-      <Card className="border-border/60 overflow-hidden text-center shadow-lg">
+    <div className="container mx-auto flex min-h-[calc(100vh-8rem)] max-w-xl items-center justify-center px-4 py-12 md:py-16">
+      <Card className="border-border/60 w-full gap-0 overflow-hidden py-0 pt-0 text-center shadow-lg">
         <div className="bg-gradient-to-b from-amber-500/10 to-transparent px-6 py-8">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400">
             <AlertCircle className="animate-in zoom-in-75 h-10 w-10 duration-300" />
@@ -40,7 +40,7 @@ export default function PaymentCancelPage() {
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col justify-center gap-3 px-6 pt-0 pb-8 sm:flex-row">
+        <CardFooter className="flex flex-col justify-center gap-3 px-6 pb-6 sm:flex-row">
           <Link
             href="/dashboard/customer"
             className={buttonVariants({

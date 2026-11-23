@@ -29,20 +29,13 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StatusBadge } from '@/features/bookings/status-badge';
 import { EmptyState } from '@/components/feedback/empty-state';
 import { ErrorState } from '@/components/feedback/error-state';
-import { clientRequest } from '@/lib/api/client';
+import { clientRequest, ApiResponse } from '@/lib/api/client';
 import { Booking } from '@/types/domain';
 import { BookingStatus } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
-interface TechnicianBookingsResponse {
-  items: Booking[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+type TechnicianBookingsResult =
+  Booking[] | { items: Booking[]; meta?: ApiResponse['meta'] };
 
 export default function TechnicianBookingsManagementPage() {
   const queryClient = useQueryClient();
@@ -57,7 +50,7 @@ export default function TechnicianBookingsManagementPage() {
     queryFn: () => {
       const statusParam =
         statusFilter !== 'ALL' ? `&status=${statusFilter}` : '';
-      return clientRequest<TechnicianBookingsResponse>(
+      return clientRequest<TechnicianBookingsResult>(
         `/technician/bookings?page=${page}&limit=10${statusParam}`
       );
     },
@@ -80,7 +73,9 @@ export default function TechnicianBookingsManagementPage() {
     onMutate: async ({ bookingId, action }) => {
       await queryClient.cancelQueries({ queryKey });
       const previousData =
-        queryClient.getQueryData<TechnicianBookingsResponse>(queryKey);
+        queryClient.getQueryData<ApiResponse<TechnicianBookingsResult>>(
+          queryKey
+        );
 
       const targetStatus: Record<string, BookingStatus> = {
         accept: 'ACCEPTED',
@@ -90,14 +85,34 @@ export default function TechnicianBookingsManagementPage() {
       };
 
       if (previousData) {
-        queryClient.setQueryData<TechnicianBookingsResponse>(queryKey, {
-          ...previousData,
-          items: previousData.items.map((b) =>
-            b.id === bookingId
-              ? { ...b, status: targetStatus[action] || b.status }
-              : b
-          ),
-        });
+        let updatedData = previousData;
+        if (Array.isArray(previousData.data)) {
+          updatedData = {
+            ...previousData,
+            data: previousData.data.map((b) =>
+              b.id === bookingId
+                ? { ...b, status: targetStatus[action] || b.status }
+                : b
+            ),
+          };
+        } else if (
+          previousData.data &&
+          Array.isArray((previousData.data as { items?: Booking[] }).items)
+        ) {
+          updatedData = {
+            ...previousData,
+            data: {
+              ...previousData.data,
+              items: (previousData.data as { items: Booking[] }).items.map(
+                (b) =>
+                  b.id === bookingId
+                    ? { ...b, status: targetStatus[action] || b.status }
+                    : b
+              ),
+            },
+          };
+        }
+        queryClient.setQueryData(queryKey, updatedData);
       }
 
       return { previousData };
@@ -127,13 +142,20 @@ export default function TechnicianBookingsManagementPage() {
     },
   });
 
-  const bookings = data?.data?.items || [];
-  const meta = data?.data?.meta || {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 1,
-  };
+  const rawData = data?.data;
+  const bookings: Booking[] = Array.isArray(rawData)
+    ? rawData
+    : Array.isArray((rawData as { items?: Booking[] })?.items)
+      ? (rawData as { items: Booking[] }).items
+      : [];
+
+  const meta = data?.meta ||
+    (rawData as { meta?: ApiResponse['meta'] })?.meta || {
+      page: 1,
+      limit: 10,
+      total: bookings.length,
+      totalPages: 1,
+    };
 
   const formatSlot = (slot?: { startTime: string; endTime: string }) => {
     if (!slot) return 'Standard Consultation';
@@ -233,10 +255,10 @@ export default function TechnicianBookingsManagementPage() {
               <Card
                 key={booking.id}
                 className={cn(
-                  'border transition-all',
+                  'group border-border/80 bg-card dark:border-border/60 overflow-hidden rounded-xl border transition-all duration-300 ease-out',
                   isExpanded
-                    ? 'ring-primary/40 shadow-sm ring-1'
-                    : 'hover:border-border'
+                    ? 'border-foreground/40 ring-foreground/20 shadow-md ring-1'
+                    : 'hover:border-foreground/30 dark:hover:border-foreground/40 hover:-translate-y-0.5 hover:shadow-lg'
                 )}
               >
                 <CardContent className="p-4 sm:p-5">

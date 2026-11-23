@@ -8,6 +8,7 @@ export interface SafeUser {
   role: UserRole;
   status: UserStatus;
   phone?: string | null;
+  avatarUrl?: string | null;
   createdAt?: string;
   technicianProfile?: {
     id: string;

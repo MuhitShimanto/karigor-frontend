@@ -2,9 +2,22 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Wrench, Shield, Calendar, LogIn, UserPlus, User } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import {
+  Wrench,
+  Calendar,
+  LogIn,
+  UserPlus,
+  User,
+  LayoutDashboard,
+  Clock,
+  Users,
+  Layers,
+  LogOut,
+} from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,11 +36,65 @@ export interface UserSession {
   name: string;
   email: string;
   role: 'CUSTOMER' | 'TECHNICIAN' | 'ADMIN';
+  avatarUrl?: string | null;
 }
 
 interface NavbarProps {
   user?: UserSession | null;
   onLogout?: () => void;
+}
+
+function getInitials(name?: string, email?: string): string {
+  if (name?.trim()) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    }
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  if (email?.trim()) {
+    return email.trim().slice(0, 2).toUpperCase();
+  }
+  return '';
+}
+
+function NavLinks() {
+  const pathname = usePathname();
+
+  const isHome = pathname === '/';
+  const isServices =
+    pathname === '/services' || pathname.startsWith('/services/');
+  const isTopTechnicians =
+    pathname === '/technicians' || pathname.startsWith('/technicians/');
+
+  const links = [
+    { href: '/', label: 'Home', active: isHome },
+    { href: '/services', label: 'Services', active: isServices },
+    {
+      href: '/technicians',
+      label: 'Top Technicians',
+      active: isTopTechnicians,
+    },
+  ];
+
+  return (
+    <nav className="hidden items-center gap-1.5 md:flex">
+      {links.map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          className={cn(
+            'rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-200',
+            link.active
+              ? 'bg-primary/10 text-primary dark:bg-primary/20 font-bold shadow-xs'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          )}
+        >
+          {link.label}
+        </Link>
+      ))}
+    </nav>
+  );
 }
 
 export function Navbar({
@@ -52,6 +119,8 @@ export function Navbar({
     return '/dashboard/customer';
   };
 
+  const initials = user ? getInitials(user.name, user.email) : '';
+
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 w-full border-b backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -74,37 +143,23 @@ export function Navbar({
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-          <Link
-            href="/"
-            className="text-foreground/80 hover:text-foreground underline-offset-4 transition-colors hover:underline"
-          >
-            Home
-          </Link>
-          <Link
-            href="/services"
-            className="text-foreground/80 hover:text-foreground underline-offset-4 transition-colors hover:underline"
-          >
-            Services
-          </Link>
-          <Link
-            href="/services?sort=rating"
-            className="text-foreground/80 hover:text-foreground underline-offset-4 transition-colors hover:underline"
-          >
-            Top Technicians
-          </Link>
-          {user && (
-            <Link
-              href={getDashboardLink()}
-              className="text-primary flex items-center gap-1.5 font-semibold underline-offset-4 hover:underline"
-            >
-              {user.role === 'ADMIN' && <Shield className="h-4 w-4" />}
-              {user.role === 'TECHNICIAN' && <Wrench className="h-4 w-4" />}
-              {user.role === 'CUSTOMER' && <Calendar className="h-4 w-4" />}
-              Dashboard
-            </Link>
-          )}
-        </nav>
+        <React.Suspense
+          fallback={
+            <nav className="hidden items-center gap-1.5 md:flex">
+              <span className="text-muted-foreground rounded-lg px-3.5 py-1.5 text-sm font-medium">
+                Home
+              </span>
+              <span className="text-muted-foreground rounded-lg px-3.5 py-1.5 text-sm font-medium">
+                Services
+              </span>
+              <span className="text-muted-foreground rounded-lg px-3.5 py-1.5 text-sm font-medium">
+                Top Technicians
+              </span>
+            </nav>
+          }
+        >
+          <NavLinks />
+        </React.Suspense>
 
         {/* Right Action Buttons */}
         <div className="hidden items-center gap-3 md:flex">
@@ -139,42 +194,65 @@ export function Navbar({
               <DropdownMenuTrigger
                 render={
                   <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-2"
+                    variant="ghost"
+                    size="icon"
+                    className="border-border bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary focus-visible:ring-ring relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border transition-colors focus-visible:ring-2"
+                    aria-label="User menu"
                   >
-                    <User className="text-muted-foreground h-4 w-4" />
-                    <span className="max-w-[120px] truncate">
-                      {user.name || user.email}
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="text-[10px] font-semibold uppercase"
-                    >
-                      {user.role}
-                    </Badge>
+                    {user.avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={user.avatarUrl}
+                        alt={user.name || 'User avatar'}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : initials ? (
+                      <span className="text-xs font-semibold tracking-wider">
+                        {initials}
+                      </span>
+                    ) : (
+                      <User className="h-4 w-4" />
+                    )}
                   </Button>
                 }
               />
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>
-                    <p className="text-sm font-medium">{user.name || 'User'}</p>
-                    <p className="text-muted-foreground truncate text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-foreground truncate text-sm font-semibold">
+                        {user.name || 'User'}
+                      </p>
+                      <Badge
+                        variant="secondary"
+                        className="shrink-0 text-[10px] font-bold uppercase"
+                      >
+                        {user.role}
+                      </Badge>
+                    </div>
+                    <p className="text-muted-foreground mt-0.5 truncate text-xs font-normal">
                       {user.email}
                     </p>
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Link href={getDashboardLink()} className="w-full">
-                    Dashboard Overview
+                  <Link
+                    href={getDashboardLink()}
+                    className="flex w-full items-center gap-2"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
                   </Link>
                 </DropdownMenuItem>
                 {user.role === 'CUSTOMER' && (
                   <DropdownMenuItem>
-                    <Link href="/dashboard/customer" className="w-full">
-                      My Bookings & Payments
+                    <Link
+                      href="/dashboard/customer"
+                      className="flex w-full items-center gap-2"
+                    >
+                      <Calendar className="h-4 w-4" />
+                      My Bookings
                     </Link>
                   </DropdownMenuItem>
                 )}
@@ -183,24 +261,27 @@ export function Navbar({
                     <DropdownMenuItem>
                       <Link
                         href="/dashboard/technician/bookings"
-                        className="w-full"
+                        className="flex w-full items-center gap-2"
                       >
-                        Booking Requests
+                        <Calendar className="h-4 w-4" />
+                        My Bookings
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link
                         href="/dashboard/technician/availability"
-                        className="w-full"
+                        className="flex w-full items-center gap-2"
                       >
+                        <Clock className="h-4 w-4" />
                         Availability Calendar
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link
                         href="/dashboard/technician/profile"
-                        className="w-full"
+                        className="flex w-full items-center gap-2"
                       >
+                        <User className="h-4 w-4" />
                         Edit Profile & Rates
                       </Link>
                     </DropdownMenuItem>
@@ -209,15 +290,29 @@ export function Navbar({
                 {user.role === 'ADMIN' && (
                   <>
                     <DropdownMenuItem>
-                      <Link href="/dashboard/admin/users" className="w-full">
+                      <Link
+                        href="/dashboard/admin/bookings"
+                        className="flex w-full items-center gap-2"
+                      >
+                        <Calendar className="h-4 w-4" />
+                        All Bookings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        href="/dashboard/admin/users"
+                        className="flex w-full items-center gap-2"
+                      >
+                        <Users className="h-4 w-4" />
                         User Management
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link
                         href="/dashboard/admin/categories"
-                        className="w-full"
+                        className="flex w-full items-center gap-2"
                       >
+                        <Layers className="h-4 w-4" />
                         Service Categories
                       </Link>
                     </DropdownMenuItem>
@@ -226,8 +321,9 @@ export function Navbar({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={onLogout}
-                  className="text-destructive focus:text-destructive cursor-pointer"
+                  className="text-destructive focus:text-destructive flex cursor-pointer items-center gap-2"
                 >
+                  <LogOut className="h-4 w-4" />
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>

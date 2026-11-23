@@ -176,10 +176,25 @@ export function BookingTable({
                           variant="outline"
                           size="sm"
                           onClick={() => onLeaveReview(booking)}
-                          className="border-primary/40 text-primary hover:bg-primary/10 h-8 gap-1 px-2 text-xs"
+                          className="border-primary/40 text-primary hover:bg-primary/10 h-8 gap-1 px-2 text-xs font-semibold"
                         >
-                          <Star className="h-3.5 w-3.5" /> Review
+                          <Star className="h-3.5 w-3.5 fill-current" /> Review
                         </Button>
+                      )}
+
+                      {/* Already Reviewed Badge Indicator */}
+                      {actions.review && booking.review && (
+                        <span
+                          className="inline-flex h-8 items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 text-xs font-semibold text-amber-600 dark:text-amber-400"
+                          title={
+                            booking.review.comment
+                              ? `Reviewed: "${booking.review.comment}"`
+                              : 'Review already submitted'
+                          }
+                        >
+                          <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                          Reviewed ({booking.review.rating}★)
+                        </span>
                       )}
 
                       {/* Booking Detail Link */}

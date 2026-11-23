@@ -169,76 +169,76 @@ export default function AdminDashboardOverviewPage() {
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {/* Total GMV Volume */}
-        <Card className="border">
-          <CardContent className="flex items-center justify-between p-4">
+        <Card className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative overflow-hidden rounded-xl border p-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+          <CardContent className="flex items-start justify-between gap-3 p-0">
             <div>
-              <p className="text-muted-foreground text-xs font-medium">
+              <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
                 Platform Volume (GMV)
               </p>
-              <p className="text-foreground mt-1 text-2xl font-bold">
+              <p className="font-heading text-foreground mt-1 text-2xl font-extrabold tracking-tight">
                 ${totalGMV.toFixed(2)}
               </p>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
+              <p className="text-muted-foreground mt-1 text-[11px]">
                 From completed Stripe checkouts
               </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="border-border/80 bg-muted/60 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-emerald-600 shadow-xs transition-transform duration-300 group-hover:scale-105 dark:text-emerald-400">
               <DollarSign className="h-5 w-5" />
             </div>
           </CardContent>
         </Card>
 
         {/* Registered Users */}
-        <Card className="border">
-          <CardContent className="flex items-center justify-between p-4">
+        <Card className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative overflow-hidden rounded-xl border p-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+          <CardContent className="flex items-start justify-between gap-3 p-0">
             <div>
-              <p className="text-muted-foreground text-xs font-medium">
+              <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
                 Platform Users
               </p>
-              <p className="text-foreground mt-1 text-2xl font-bold">
+              <p className="font-heading text-foreground mt-1 text-2xl font-extrabold tracking-tight">
                 {totalUsersCount}
               </p>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
+              <p className="text-muted-foreground mt-1 text-[11px]">
                 {customersCount} customers, {techniciansCount} technicians
               </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="border-border/80 bg-muted/60 text-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border shadow-xs transition-transform duration-300 group-hover:scale-105">
               <Users className="h-5 w-5" />
             </div>
           </CardContent>
         </Card>
 
         {/* Total Service Bookings */}
-        <Card className="border">
-          <CardContent className="flex items-center justify-between p-4">
+        <Card className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative overflow-hidden rounded-xl border p-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+          <CardContent className="flex items-start justify-between gap-3 p-0">
             <div>
-              <p className="text-muted-foreground text-xs font-medium">
+              <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
                 Total Bookings
               </p>
-              <p className="text-foreground mt-1 text-2xl font-bold">
+              <p className="font-heading text-foreground mt-1 text-2xl font-extrabold tracking-tight">
                 {totalBookingsCount}
               </p>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
+              <p className="text-muted-foreground mt-1 text-[11px]">
                 {activeBookingsCount} active, {completedBookingsCount} completed
               </p>
             </div>
-            <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl">
+            <div className="border-border/80 bg-muted/60 text-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border shadow-xs transition-transform duration-300 group-hover:scale-105">
               <Calendar className="h-5 w-5" />
             </div>
           </CardContent>
         </Card>
 
         {/* Categories & Catalog */}
-        <Card className="border">
-          <CardContent className="flex items-center justify-between p-4">
+        <Card className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative overflow-hidden rounded-xl border p-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+          <CardContent className="flex items-start justify-between gap-3 p-0">
             <div>
-              <p className="text-muted-foreground text-xs font-medium">
+              <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
                 Service Categories
               </p>
-              <p className="text-foreground mt-1 text-2xl font-bold">
+              <p className="font-heading text-foreground mt-1 text-2xl font-extrabold tracking-tight">
                 {categories.length}
               </p>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
+              <p className="text-muted-foreground mt-1 text-[11px]">
                 {bannedCount > 0 ? (
                   <span className="text-destructive font-medium">
                     {bannedCount} banned users
@@ -248,7 +248,7 @@ export default function AdminDashboardOverviewPage() {
                 )}
               </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+            <div className="border-border/80 bg-muted/60 text-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border shadow-xs transition-transform duration-300 group-hover:scale-105">
               <Layers className="h-5 w-5" />
             </div>
           </CardContent>
@@ -259,18 +259,18 @@ export default function AdminDashboardOverviewPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Link
           href="/dashboard/admin/users"
-          className="group border-border/70 bg-card hover:border-primary/40 block rounded-xl border p-5 transition-all hover:shadow-xs"
+          className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative block overflow-hidden rounded-xl border p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg"
         >
           <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="border-border/80 bg-muted/60 text-foreground flex h-9 w-9 items-center justify-center rounded-lg border shadow-xs transition-transform duration-300 group-hover:scale-105">
               <Users className="h-5 w-5" />
             </div>
             <ArrowRight className="text-muted-foreground group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
           </div>
-          <h3 className="text-foreground mt-3 text-sm font-bold">
+          <h3 className="text-foreground group-hover:text-primary mt-3 text-sm font-bold tracking-tight transition-colors">
             User Management
           </h3>
-          <p className="text-muted-foreground mt-1 text-xs">
+          <p className="text-muted-foreground/90 mt-1 text-xs leading-relaxed">
             Search, filter, view profiles, and ban or reinstate customer and
             technician accounts.
           </p>
@@ -278,18 +278,18 @@ export default function AdminDashboardOverviewPage() {
 
         <Link
           href="/dashboard/admin/categories"
-          className="group border-border/70 bg-card hover:border-primary/40 block rounded-xl border p-5 transition-all hover:shadow-xs"
+          className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative block overflow-hidden rounded-xl border p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg"
         >
           <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
+            <div className="border-border/80 bg-muted/60 text-foreground flex h-9 w-9 items-center justify-center rounded-lg border shadow-xs transition-transform duration-300 group-hover:scale-105">
               <FolderTree className="h-5 w-5" />
             </div>
             <ArrowRight className="text-muted-foreground group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
           </div>
-          <h3 className="text-foreground mt-3 text-sm font-bold">
+          <h3 className="text-foreground group-hover:text-primary mt-3 text-sm font-bold tracking-tight transition-colors">
             Category Management
           </h3>
-          <p className="text-muted-foreground mt-1 text-xs">
+          <p className="text-muted-foreground/90 mt-1 text-xs leading-relaxed">
             Create new service categories, manage active status, and maintain
             marketplace taxonomy.
           </p>
@@ -297,18 +297,18 @@ export default function AdminDashboardOverviewPage() {
 
         <Link
           href="/dashboard/admin/bookings"
-          className="group border-border/70 bg-card hover:border-primary/40 block rounded-xl border p-5 transition-all hover:shadow-xs"
+          className="group border-border/80 bg-card hover:border-foreground/30 dark:border-border/60 dark:hover:border-foreground/40 relative block overflow-hidden rounded-xl border p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg"
         >
           <div className="flex items-center justify-between">
-            <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-lg">
+            <div className="border-border/80 bg-muted/60 text-foreground flex h-9 w-9 items-center justify-center rounded-lg border shadow-xs transition-transform duration-300 group-hover:scale-105">
               <Calendar className="h-5 w-5" />
             </div>
             <ArrowRight className="text-muted-foreground group-hover:text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
           </div>
-          <h3 className="text-foreground mt-3 text-sm font-bold">
+          <h3 className="text-foreground group-hover:text-primary mt-3 text-sm font-bold tracking-tight transition-colors">
             Global Bookings
           </h3>
-          <p className="text-muted-foreground mt-1 text-xs">
+          <p className="text-muted-foreground/90 mt-1 text-xs leading-relaxed">
             Monitor platform-wide service orders across customers, technicians,
             and fulfillment stages.
           </p>

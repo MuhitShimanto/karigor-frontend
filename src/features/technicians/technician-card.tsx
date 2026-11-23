@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, MapPin, Award, ArrowRight } from 'lucide-react';
+import { Star, MapPin, Award, ArrowRight, ShieldCheck } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -24,32 +24,45 @@ export function TechnicianCard({ tech }: { tech: TechnicianProfile }) {
     )}`;
 
   return (
-    <Card className="hover:border-primary/40 flex flex-col justify-between overflow-hidden border transition-all hover:shadow-lg">
+    <Card className="group border-border/80 bg-card hover:border-foreground/30 hover:shadow-primary/5 dark:border-border/60 dark:hover:border-foreground/40 relative flex flex-col justify-between overflow-hidden rounded-xl border p-0 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl">
       <CardHeader className="p-5 pb-3">
-        <div className="flex items-center gap-3">
-          <div className="bg-muted border-primary/30 relative h-14 w-14 shrink-0 overflow-hidden rounded-full border-2">
-            <Image
-              src={avatarUrl}
-              alt={tech.user?.name || 'Technician'}
-              fill
-              sizes="56px"
-              className="object-cover"
-              unoptimized
+        <div className="flex items-center gap-3.5">
+          <div className="relative shrink-0">
+            <div className="border-border/80 bg-muted relative h-14 w-14 overflow-hidden rounded-full border-2 shadow-xs transition-transform duration-300 group-hover:scale-105">
+              <Image
+                src={avatarUrl}
+                alt={tech.user?.name || 'Technician'}
+                fill
+                sizes="56px"
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+            <span
+              className="border-background absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2 bg-emerald-500"
+              title="Verified Karigor Pro"
             />
           </div>
 
           <div className="min-w-0 flex-1">
-            <h3 className="text-foreground truncate text-base font-bold">
-              {tech.user?.name || 'Technician'}
-            </h3>
-            <div className="text-muted-foreground mt-0.5 flex items-center gap-1.5 text-xs">
-              <MapPin className="text-primary h-3 w-3 shrink-0" />
+            <div className="flex items-center gap-1.5">
+              <h3 className="text-foreground group-hover:text-primary truncate text-base font-bold tracking-tight transition-colors">
+                {tech.user?.name || 'Technician'}
+              </h3>
+              <span title="Verified Technician">
+                <ShieldCheck className="text-primary h-4 w-4 shrink-0" />
+              </span>
+            </div>
+
+            <div className="text-muted-foreground mt-0.5 flex items-center gap-1 text-xs">
+              <MapPin className="text-muted-foreground h-3 w-3 shrink-0" />
               <span className="truncate">
                 {tech.location || 'Dhaka, Bangladesh'}
               </span>
             </div>
-            <div className="mt-1 flex items-center gap-2">
-              <div className="flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400">
+
+            <div className="mt-1.5 flex items-center gap-2">
+              <div className="border-border/70 bg-muted/40 text-foreground inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs font-semibold">
                 <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                 <span>{Number(tech.avgRating || 0).toFixed(1)}</span>
               </div>
@@ -61,9 +74,9 @@ export function TechnicianCard({ tech }: { tech: TechnicianProfile }) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3 p-5 pt-2">
+      <CardContent className="space-y-3 p-5 pt-1">
         {tech.bio && (
-          <p className="text-muted-foreground line-clamp-2 min-h-[32px] text-xs">
+          <p className="text-muted-foreground/90 line-clamp-2 min-h-[32px] text-xs leading-relaxed">
             {tech.bio}
           </p>
         )}
@@ -74,35 +87,40 @@ export function TechnicianCard({ tech }: { tech: TechnicianProfile }) {
             tech.skills.slice(0, 3).map((skill, idx) => (
               <Badge
                 key={idx}
-                variant="secondary"
-                className="px-2 py-0 text-[10px]"
+                variant="outline"
+                className="border-border/70 bg-muted/40 text-foreground group-hover:border-foreground/20 px-2 py-0 text-[10px] font-medium transition-colors"
               >
                 {skill}
               </Badge>
             ))
           ) : (
-            <Badge variant="secondary" className="px-2 py-0 text-[10px]">
+            <Badge
+              variant="outline"
+              className="border-border/70 bg-muted/40 text-foreground px-2 py-0 text-[10px] font-medium"
+            >
               General Maintenance
             </Badge>
           )}
           {tech.skills && tech.skills.length > 3 && (
-            <span className="text-muted-foreground self-center text-[10px]">
+            <span className="text-muted-foreground self-center text-[10px] font-medium">
               +{tech.skills.length - 3} more
             </span>
           )}
         </div>
 
         {/* Experience & Price Bar */}
-        <div className="flex items-center justify-between border-t pt-3 text-xs">
-          <div className="text-muted-foreground flex items-center gap-1">
-            <Award className="text-primary h-3.5 w-3.5" />
-            <span>{tech.experienceYears || 1}+ yrs exp</span>
+        <div className="border-border/60 flex items-center justify-between border-t pt-3 text-xs">
+          <div className="text-muted-foreground flex items-center gap-1.5">
+            <Award className="text-muted-foreground h-3.5 w-3.5" />
+            <span className="text-foreground font-medium">
+              {tech.experienceYears || 1}+ yrs exp
+            </span>
           </div>
           <div className="text-right">
-            <span className="text-muted-foreground block text-[10px]">
+            <span className="text-muted-foreground block text-[10px] font-medium tracking-wider uppercase">
               Rate
             </span>
-            <span className="text-foreground font-bold">
+            <span className="font-heading text-foreground font-bold">
               {hourlyRate > 0
                 ? `৳${hourlyRate.toLocaleString()}/hr`
                 : 'Negotiable'}
@@ -111,15 +129,18 @@ export function TechnicianCard({ tech }: { tech: TechnicianProfile }) {
         </div>
       </CardContent>
 
-      <CardFooter className="p-5 pt-0">
+      <CardFooter className="border-border/60 bg-muted/15 border-t px-5 py-4">
         <Link
           href={`/technicians/${tech.id}`}
           className={buttonVariants({
-            size: 'sm',
-            className: 'w-full gap-1.5 shadow-sm',
+            size: 'default',
+            variant: 'default',
+            className:
+              'group/btn hover:bg-primary/90 w-full justify-between font-semibold shadow-xs transition-all hover:shadow-md',
           })}
         >
-          View Profile & Book <ArrowRight className="h-3.5 w-3.5" />
+          <span>View Profile & Book</span>
+          <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
         </Link>
       </CardFooter>
     </Card>

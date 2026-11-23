@@ -1,13 +1,24 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Search, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import {
+  Search,
+  MapPin,
+  RotateCcw,
+  SlidersHorizontal,
+  ChevronDown,
+  ChevronUp,
+  Tag,
+  Star,
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Category } from '@/types/domain';
 import { useDebounce } from '@/hooks/use-debounce';
+import { cn } from '@/lib/utils';
 
 interface FilterBarProps {
   categories: Category[];
@@ -16,6 +27,11 @@ interface FilterBarProps {
 export function FilterBar({ categories }: FilterBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const basePath = pathname.startsWith('/technicians')
+    ? '/technicians'
+    : '/services';
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
   // Initialize state from URL params
   const [search, setSearch] = React.useState(searchParams.get('search') || '');
@@ -70,7 +86,7 @@ export function FilterBar({ categories }: FilterBarProps) {
       if (current.order) params.set('order', current.order);
       params.set('page', '1'); // Reset to page 1 on filter change
 
-      router.push(`/services?${params.toString()}`);
+      router.push(`${basePath}?${params.toString()}`);
     },
     [
       debouncedSearch,
@@ -82,6 +98,7 @@ export function FilterBar({ categories }: FilterBarProps) {
       sortBy,
       order,
       router,
+      basePath,
     ]
   );
 
@@ -112,145 +129,249 @@ export function FilterBar({ categories }: FilterBarProps) {
     setMaxPrice('');
     setSortBy('rating');
     setOrder('desc');
-    router.push('/services');
+    router.push(basePath);
   };
 
-  const hasActiveFilters = Boolean(
-    search ||
-    location ||
-    category ||
-    minRating ||
-    minPrice ||
-    maxPrice ||
-    sortBy !== 'rating'
-  );
+  const activeCount = [
+    Boolean(search),
+    Boolean(location),
+    Boolean(category),
+    Boolean(minRating),
+    Boolean(minPrice || maxPrice),
+    sortBy !== 'rating' || order !== 'desc',
+  ].filter(Boolean).length;
 
-  return (
-    <div className="bg-card space-y-4 rounded-2xl border p-4 shadow-sm sm:p-6">
-      {/* Search and Location Top Row */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
-        <div className="relative md:col-span-5">
-          <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
+  const filterContent = (
+    <div className="space-y-6">
+      {/* Header with Title and Reset */}
+      <div className="border-border/60 flex items-center justify-between border-b pb-3">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="text-primary h-4 w-4" />
+          <h2 className="text-foreground text-sm font-bold tracking-tight">
+            Filters
+          </h2>
+          {activeCount > 0 && (
+            <Badge
+              variant="outline"
+              className="border-primary/40 bg-primary/10 text-primary text-[10px] font-semibold"
+            >
+              {activeCount}
+            </Badge>
+          )}
+        </div>
+
+        {activeCount > 0 && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleClearFilters}
+            className="text-muted-foreground hover:text-destructive h-7 gap-1 px-2 text-xs font-medium"
+          >
+            <RotateCcw className="h-3 w-3" />
+            Reset
+          </Button>
+        )}
+      </div>
+
+      {/* Search Input */}
+      <div className="space-y-1.5">
+        <Label className="text-foreground text-xs font-semibold tracking-wider uppercase">
+          Search Services
+        </Label>
+        <div className="relative">
+          <Search className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
           <Input
-            placeholder="Search service title or technician name..."
+            placeholder="Title, technician, keyword..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-10 pl-9"
+            className="h-10 pl-9 text-sm"
           />
-        </div>
-
-        <div className="relative md:col-span-4">
-          <Input
-            placeholder="Location (e.g. Dhanmondi, Gulshan, Mirpur)"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="h-10"
-          />
-        </div>
-
-        <div className="flex items-center gap-2 md:col-span-3">
-          <select
-            value={`${sortBy}-${order}`}
-            onChange={(e) => {
-              const [s, o] = e.target.value.split('-');
-              setSortBy(s);
-              setOrder(o);
-            }}
-            className="border-input bg-background focus:ring-ring h-10 w-full rounded-md border px-3 py-1 text-xs shadow-sm focus:ring-1 focus:outline-none sm:text-sm"
-          >
-            <option value="rating-desc">Sort: Highest Rated</option>
-            <option value="price-asc">Sort: Price (Low to High)</option>
-            <option value="price-desc">Sort: Price (High to Low)</option>
-            <option value="experience-desc">Sort: Most Experienced</option>
-          </select>
-
-          {hasActiveFilters && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleClearFilters}
-              title="Clear all filters"
-              className="text-muted-foreground hover:text-destructive h-10 w-10 shrink-0"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-          )}
         </div>
       </div>
 
-      {/* Category Pills & Range Row */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-2">
-        {/* Category Pills */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-muted-foreground mr-1 flex items-center gap-1 text-xs font-semibold">
-            <SlidersHorizontal className="h-3 w-3" /> Categories:
-          </span>
+      {/* Location Input */}
+      <div className="space-y-1.5">
+        <Label className="text-foreground text-xs font-semibold tracking-wider uppercase">
+          Location
+        </Label>
+        <div className="relative">
+          <MapPin className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+          <Input
+            placeholder="e.g. Dhanmondi, Gulshan"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="h-10 pl-9 text-sm"
+          />
+        </div>
+      </div>
+
+      {/* Sort By */}
+      <div className="space-y-1.5">
+        <Label className="text-foreground text-xs font-semibold tracking-wider uppercase">
+          Sort Results
+        </Label>
+        <select
+          value={`${sortBy}-${order}`}
+          onChange={(e) => {
+            const [s, o] = e.target.value.split('-');
+            setSortBy(s);
+            setOrder(o);
+          }}
+          className="border-input bg-background focus:ring-ring h-10 w-full rounded-md border px-3 py-1 text-sm shadow-xs focus:ring-1 focus:outline-none"
+        >
+          <option value="rating-desc">Highest Rated Pro</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="experience-desc">Most Experienced</option>
+        </select>
+      </div>
+
+      {/* Categories Vertical List */}
+      <div className="border-border/60 space-y-2 border-t pt-4">
+        <div className="flex items-center justify-between">
+          <Label className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
+            <Tag className="text-muted-foreground h-3.5 w-3.5" />
+            Categories
+          </Label>
+          {category && (
+            <button
+              type="button"
+              onClick={() => setCategory('')}
+              className="text-primary text-[11px] font-medium hover:underline"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        <div className="max-h-56 space-y-1 overflow-y-auto pr-1">
           <button
             type="button"
             onClick={() => setCategory('')}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            className={cn(
+              'flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs font-medium transition-colors',
               category === ''
-                ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
-                : 'bg-muted hover:bg-accent text-muted-foreground'
-            }`}
+                ? 'bg-primary/10 text-primary dark:bg-primary/20 font-bold'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+            )}
           >
-            All
+            <span>All Categories</span>
           </button>
           {categories.map((cat) => (
             <button
               key={cat.id}
               type="button"
               onClick={() => setCategory(category === cat.id ? '' : cat.id)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              className={cn(
+                'flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs font-medium transition-colors',
                 category === cat.id
-                  ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
-                  : 'bg-muted hover:bg-accent text-muted-foreground'
-              }`}
+                  ? 'bg-primary/10 text-primary dark:bg-primary/20 font-bold'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
             >
-              {cat.name}
+              <span className="truncate">{cat.name}</span>
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Rating & Price Controls */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Min Rating */}
-          <div className="flex items-center gap-1.5">
-            <Label className="text-muted-foreground text-xs">Rating:</Label>
-            <select
-              value={minRating}
-              onChange={(e) => setMinRating(e.target.value)}
-              className="border-input bg-background h-8 rounded-md border px-2 text-xs"
+      {/* Minimum Rating */}
+      <div className="border-border/60 space-y-2 border-t pt-4">
+        <Label className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
+          <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+          Minimum Rating
+        </Label>
+        <div className="grid grid-cols-4 gap-1.5">
+          {[
+            { value: '', label: 'All' },
+            { value: '3.5', label: '3.5★' },
+            { value: '4.0', label: '4.0★' },
+            { value: '4.5', label: '4.5★' },
+          ].map((r) => (
+            <button
+              key={r.value}
+              type="button"
+              onClick={() => setMinRating(minRating === r.value ? '' : r.value)}
+              className={cn(
+                'rounded-lg border py-1.5 text-center text-xs font-medium transition-colors',
+                minRating === r.value
+                  ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 font-bold'
+                  : 'border-border/70 bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
             >
-              <option value="">Any</option>
-              <option value="4.5">4.5+ ⭐</option>
-              <option value="4.0">4.0+ ⭐</option>
-              <option value="3.5">3.5+ ⭐</option>
-            </select>
-          </div>
+              {r.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
-          {/* Min & Max Price */}
-          <div className="flex items-center gap-1.5">
-            <Label className="text-muted-foreground text-xs">Price:</Label>
-            <Input
-              type="number"
-              placeholder="Min ৳"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-              className="h-8 w-20 px-2 text-xs"
-            />
-            <span className="text-muted-foreground text-xs">-</span>
-            <Input
-              type="number"
-              placeholder="Max ৳"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="h-8 w-20 px-2 text-xs"
-            />
-          </div>
+      {/* Price Range */}
+      <div className="border-border/60 space-y-2 border-t pt-4">
+        <Label className="text-foreground text-xs font-semibold">
+          Price Range (৳)
+        </Label>
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            placeholder="Min"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            className="h-8 text-xs"
+          />
+          <span className="text-muted-foreground text-xs font-medium">-</span>
+          <Input
+            type="number"
+            placeholder="Max"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            className="h-8 text-xs"
+          />
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {/* Mobile Toggle Button & Dropdown Drawer */}
+      <div className="w-full space-y-3 lg:hidden">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="border-border/80 bg-card w-full justify-between font-medium shadow-xs"
+        >
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="text-primary h-4 w-4" />
+            <span>Filters & Sorting</span>
+            {activeCount > 0 && (
+              <Badge
+                variant="outline"
+                className="border-primary/40 bg-primary/10 text-primary text-[10px] font-semibold"
+              >
+                {activeCount} active
+              </Badge>
+            )}
+          </div>
+          {mobileOpen ? (
+            <ChevronUp className="text-muted-foreground h-4 w-4" />
+          ) : (
+            <ChevronDown className="text-muted-foreground h-4 w-4" />
+          )}
+        </Button>
+
+        {mobileOpen && (
+          <div className="border-border/80 bg-card overflow-hidden rounded-xl border p-5 shadow-sm">
+            {filterContent}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Sticky Left Sidebar */}
+      <div className="border-border/80 bg-card dark:border-border/60 sticky top-24 hidden overflow-hidden rounded-xl border p-5 shadow-xs lg:block">
+        {filterContent}
+      </div>
+    </>
   );
 }

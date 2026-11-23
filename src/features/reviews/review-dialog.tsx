@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { clientRequest } from '@/lib/api/client';
-import { Booking } from '@/types/domain';
+import { clientRequest, ApiResponse } from '@/lib/api/client';
+import { Booking, Review } from '@/types/domain';
 import { cn } from '@/lib/utils';
 
 interface ReviewDialogProps {
@@ -70,7 +70,7 @@ export function ReviewDialog({
 
     setIsSubmitting(true);
     try {
-      await clientRequest('/reviews', {
+      const res = await clientRequest<Review>('/reviews', {
         method: 'POST',
         body: JSON.stringify({
           bookingId: booking.id,
@@ -78,6 +78,62 @@ export function ReviewDialog({
           comment: comment.trim() || undefined,
         }),
       });
+
+      const newReview: Review = res.data || {
+        id: 'new-review',
+        bookingId: booking.id,
+        customerId: booking.customerId,
+        technicianId: booking.technicianId,
+        rating,
+        comment: comment.trim() || undefined,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Optimistically update all bookings queries in cache so table immediately shows reviewed badge
+      queryClient.setQueriesData<ApiResponse<Booking[] | { items: Booking[] }>>(
+        { queryKey: ['bookings'] },
+        (oldData) => {
+          if (!oldData) return oldData;
+          if (Array.isArray(oldData.data)) {
+            return {
+              ...oldData,
+              data: oldData.data.map((b) =>
+                b.id === booking.id ? { ...b, review: newReview } : b
+              ),
+            };
+          }
+          if (
+            oldData.data &&
+            Array.isArray((oldData.data as { items?: Booking[] }).items)
+          ) {
+            return {
+              ...oldData,
+              data: {
+                ...oldData.data,
+                items: (oldData.data as { items: Booking[] }).items.map((b) =>
+                  b.id === booking.id ? { ...b, review: newReview } : b
+                ),
+              },
+            };
+          }
+          return oldData;
+        }
+      );
+
+      // Also update single booking query
+      queryClient.setQueriesData<ApiResponse<Booking>>(
+        { queryKey: ['booking', booking.id] },
+        (oldData) => {
+          if (!oldData?.data) return oldData;
+          return {
+            ...oldData,
+            data: {
+              ...oldData.data,
+              review: newReview,
+            },
+          };
+        }
+      );
 
       toast.success('Thank you! Your review and rating have been published.');
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
